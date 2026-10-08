@@ -1,0 +1,1 @@
+<img src="{{ asset('img/Favicon-Vodeco.png') }}" alt="Logo VODECO" {{ $attributes }}>
