@@ -21,10 +21,9 @@
         },
         selectedIds: [],
         asset: {},
-        _scanner: null,
         _editTag: null,
         _editUrl: null,
-        _scanStatus: 'Scan QR Code aset untuk verifikasi sebelum edit.',
+        _scanStatus: 'Scan barcode aset untuk verifikasi sebelum edit.',
 
         init() { this.initBulkCheckboxes(); },
 
@@ -93,21 +92,37 @@
             const form = event.target;
             Swal.fire({ title: 'Hapus Massal?', text: 'Anda akan menghapus ' + this.selectedIds.length + ' aset yang dipilih. Tindakan ini memerlukan persetujuan Super Admin.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'Hapus', cancelButtonText: 'Batal', reverseButtons: true, focusCancel: true }).then((result) => { if (result.isConfirmed) form.submit(); });
         },
+
+        {{-- ===== Edit Scanner (Barcode) ===== --}}
         openEditScanner(expectedTag, editUrl) {
             this._editTag = expectedTag; this._editUrl = editUrl;
-            this._scanStatus = 'Scan QR Code aset untuk verifikasi sebelum edit.';
+            this._scanStatus = 'Scan barcode aset untuk verifikasi sebelum edit.';
             this.showEditScanner = true;
             this.$nextTick(() => this.startEditScanner());
         },
         startEditScanner() {
-            if (!this._scanner) this._scanner = new Html5Qrcode('edit-reader');
-            this._scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 250, height: 250 } }, (text) => this.onEditScanSuccess(text)).then(() => this._scanStatus = 'Arahkan kamera ke QR Code...');
+            this._scanStatus = 'Membuka kamera...';
+            BarcodeCam.start(this.$refs.editVideo, (text) => this.onEditScanSuccess(text))
+                .then(() => { this._scanStatus = 'Arahkan kamera ke barcode...'; })
+                .catch((e) => { console.error('Scanner error:', e); this._scanStatus = '❌ ' + BarcodeCam.errorMessage(e); });
         },
-        stopEditScanner() { if (this._scanner && this._scanner.isScanning) this._scanner.stop().catch(() => {}); this._scanStatus = 'Scan QR Code aset untuk verifikasi sebelum edit.'; },
-        onEditScanSuccess(tag) {
-            this._scanner.pause();
-            if (tag === this._editTag) { this._scanStatus = 'QR Code cocok! Mengalihkan...'; this.stopEditScanner(); this.showEditScanner = false; window.location.href = this._editUrl; }
-            else { this._scanStatus = 'QR Code tidak cocok! Pastikan Anda scan aset yang benar.'; setTimeout(() => { this._scanStatus = 'Arahkan kamera ke QR Code...'; this._scanner.resume(); }, 2000); }
+        stopEditScanner() {
+            BarcodeCam.stop();
+            this._scanStatus = 'Scan barcode aset untuk verifikasi sebelum edit.';
+        },
+        onEditScanSuccess(text) {
+            const code = String(text || '').trim();
+            if (code === String(this._editTag || '').trim()) {
+                this._scanStatus = '✅ Barcode cocok! Mengalihkan...';
+                const target = this._editUrl;
+                this.stopEditScanner();
+                this.showEditScanner = false;
+                window.location.href = target;
+            } else {
+                BarcodeCam.pauseFor(2000);
+                this._scanStatus = '❌ Barcode tidak cocok! Pastikan Anda scan aset yang benar.';
+                setTimeout(() => { if (this.showEditScanner) this._scanStatus = 'Arahkan kamera ke barcode...'; }, 2000);
+            }
         },
         closeEditScanner() { this.stopEditScanner(); this.showEditScanner = false; this._editTag = null; this._editUrl = null; },
     }" @keydown.window.escape="showAssetModal = false; closeEditScanner(); showFilters = false">
@@ -281,28 +296,217 @@
             </div>
         </div>
 
-        {{-- Edit Scanner Modal --}}
+        {{-- Edit Scanner Modal (Barcode) --}}
         <div x-show="showEditScanner" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
             <div x-show="showEditScanner" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm" @click="closeEditScanner()"></div>
             <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
                 <div x-show="showEditScanner" x-transition class="relative bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-gray-100">
                     <div class="bg-gray-50 px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-18m0 0h2m-2-11h2m14 0h2M9 7h1v1H9V7zm5 0h1v1h-1V7zm-5 5h1v1H9v-1zm5 0h1v1h-1v-1zM7 5h4v4H7V5zm8 0h4v4h-4V5zm-8 8h4v4H7v-4zm8 0h4v4h-4v-4z"></path></svg>
-                            Verifikasi QR Code
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"></path></svg>
+                            Verifikasi Barcode
                         </h3>
                         <button @click="closeEditScanner()" class="text-gray-400 hover:text-red-600 transition-colors cursor-pointer">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                     <div class="p-5">
-                        <p class="text-sm text-gray-600 mb-3 text-center">Scan QR Code pada aset fisik untuk memastikan Anda mengedit aset yang benar.</p>
-                        <div id="edit-reader" class="w-full rounded-lg overflow-hidden bg-black aspect-square"></div>
-                        <p class="text-center text-sm mt-3 font-medium" :class="_scanStatus.includes('✅') ? 'text-emerald-600' : _scanStatus.includes('❌') ? 'text-red-600' : 'text-gray-400'" x-text="_scanStatus"></p>
+                        <p class="text-sm text-gray-600 mb-3 text-center">Scan barcode pada aset fisik untuk memastikan Anda mengedit aset yang benar.</p>
+
+                        {{-- Video kamera + garis bantu --}}
+                        <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio: 4 / 3;">
+                            <video x-ref="editVideo" playsinline muted autoplay
+                                class="absolute inset-0 w-full h-full" style="object-fit:cover;"></video>
+                            <div class="absolute pointer-events-none border-2 border-white/80 rounded-lg"
+                                style="left:5%; right:5%; top:30%; bottom:30%;"></div>
+                        </div>
+
+                        <p class="text-center text-sm mt-3 font-medium"
+                           :class="_scanStatus.includes('✅') ? 'text-emerald-600' : _scanStatus.includes('❌') ? 'text-red-600' : 'text-gray-400'"
+                           x-text="_scanStatus"></p>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+    <script>
+        // Pembaca barcode: decode frame kamera resolusi penuh.
+        // State disimpan di luar Alpine agar tidak dibungkus Proxy.
+        window.BarcodeCam = (function () {
+            let stream = null;
+            let timer = null;
+            let detector = null;
+            let zxingReader = null;
+            let onText = null;
+            let video = null;
+            let busy = false;
+            let pausedUntil = 0;
+            let session = 0;
+            const canvas = document.createElement('canvas');
+
+            const NATIVE_FORMATS = ['code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a'];
+
+            async function initDecoder() {
+                detector = null;
+                zxingReader = null;
+
+                // 1) BarcodeDetector bawaan browser (Chrome Android, dll.)
+                if ('BarcodeDetector' in window) {
+                    try {
+                        const supported = await BarcodeDetector.getSupportedFormats();
+                        const formats = NATIVE_FORMATS.filter(f => supported.includes(f));
+                        if (formats.length) {
+                            detector = new BarcodeDetector({ formats });
+                            return;
+                        }
+                    } catch (_) {}
+                }
+
+                // 2) Fallback ZXing (iPhone/Safari, Firefox, dll.)
+                const Z = window.ZXing;
+                if (!Z) throw new Error('Library pembaca barcode gagal dimuat. Periksa koneksi internet.');
+
+                const hints = new Map();
+                hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, [
+                    Z.BarcodeFormat.CODE_128,
+                    Z.BarcodeFormat.CODE_39,
+                    Z.BarcodeFormat.EAN_13,
+                    Z.BarcodeFormat.EAN_8,
+                    Z.BarcodeFormat.UPC_A,
+                ]);
+                hints.set(Z.DecodeHintType.TRY_HARDER, true);
+                zxingReader = new Z.MultiFormatReader();
+                zxingReader.setHints(hints);
+            }
+
+            async function decodeFrame() {
+                if (detector) {
+                    const codes = await detector.detect(video);
+                    return codes.length ? codes[0].rawValue : null;
+                }
+
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                const scale = Math.min(1, 1280 / Math.max(vw, vh));
+                canvas.width = Math.floor(vw * scale);
+                canvas.height = Math.floor(vh * scale);
+
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const Z = window.ZXing;
+                try {
+                    const source = new Z.HTMLCanvasElementLuminanceSource(canvas);
+                    const bitmap = new Z.BinaryBitmap(new Z.HybridBinarizer(source));
+                    return zxingReader.decodeWithState(bitmap).getText();
+                } catch (_) {
+                    return null; // belum ditemukan di frame ini
+                }
+            }
+
+            function loop(mySession) {
+                if (mySession !== session) return;
+
+                if (!busy && Date.now() >= pausedUntil && video && video.readyState >= 2 && video.videoWidth > 0) {
+                    busy = true;
+                    decodeFrame()
+                        .then((text) => {
+                            if (text && mySession === session && onText) onText(text);
+                        })
+                        .catch(() => {})
+                        .finally(() => { busy = false; });
+                }
+
+                timer = setTimeout(() => loop(mySession), 80);
+            }
+
+            function release() {
+                clearTimeout(timer);
+                timer = null;
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                    stream = null;
+                }
+                if (video) video.srcObject = null;
+                detector = null;
+                zxingReader = null;
+                onText = null;
+                busy = false;
+                pausedUntil = 0;
+            }
+
+            async function start(videoEl, callback) {
+                stop();
+                const mySession = ++session;
+
+                if (!window.isSecureContext) {
+                    throw new Error('Kamera hanya bisa dipakai lewat HTTPS (atau localhost).');
+                }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Browser tidak mendukung akses kamera.');
+                }
+
+                video = videoEl;
+                onText = callback;
+
+                await initDecoder();
+                if (mySession !== session) return;
+
+                const s = await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                    },
+                });
+
+                // Modal ditutup saat kamera masih dibuka
+                if (mySession !== session) {
+                    s.getTracks().forEach(t => t.stop());
+                    return;
+                }
+                stream = s;
+
+                // Autofocus kontinu jika didukung
+                try {
+                    const track = s.getVideoTracks()[0];
+                    const caps = track.getCapabilities ? track.getCapabilities() : {};
+                    if (caps.focusMode && caps.focusMode.includes('continuous')) {
+                        await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                    }
+                } catch (_) {}
+
+                video.srcObject = s;
+                await video.play();
+                if (mySession !== session) return;
+
+                loop(mySession);
+            }
+
+            function stop() {
+                session++;
+                release();
+            }
+
+            function pauseFor(ms) {
+                pausedUntil = Date.now() + ms;
+            }
+
+            function errorMessage(error) {
+                if (error?.name === 'NotAllowedError') return 'Akses kamera ditolak. Izinkan kamera pada pengaturan browser.';
+                if (error?.name === 'NotFoundError') return 'Kamera tidak ditemukan pada perangkat.';
+                if (error?.name === 'NotReadableError') return 'Kamera sedang digunakan oleh aplikasi lain.';
+                if (error?.message) return error.message;
+                return 'Kamera tidak dapat diakses. Periksa izin kamera browser.';
+            }
+
+            return { start, stop, pauseFor, errorMessage };
+        })();
+    </script>
+    @endpush
 </x-app-layout>

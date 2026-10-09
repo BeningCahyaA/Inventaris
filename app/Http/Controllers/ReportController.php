@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class ReportController extends Controller
 {
@@ -32,7 +32,7 @@ class ReportController extends Controller
         $statusBreakdown = $assets->groupBy('status')->map->count();
 
         // Breakdown per kondisi (normalize ke lowercase supaya match view keys)
-        $conditionBreakdown = $assets->groupBy(fn ($a) => strtolower(str_replace(' ', '_', $a->condition ?? '')))->map->count();
+        $conditionBreakdown = $assets->groupBy(fn($a) => strtolower(str_replace(' ', '_', $a->condition ?? '')))->map->count();
 
         // Group by kategori (nama dari DB)
         $categories = Category::pluck('name', 'slug');
@@ -99,8 +99,17 @@ class ReportController extends Controller
             $assets = Asset::orderBy('id', 'asc')->get();
         }
 
+        $generator = new BarcodeGeneratorPNG();
+
         foreach ($assets as $asset) {
-            $asset->qr_code = base64_encode((string) QrCode::format('png')->size(100)->generate($asset->asset_tag));
+            $asset->barcode = base64_encode(
+                $generator->getBarcode(
+                    $asset->asset_tag,
+                    $generator::TYPE_CODE_128,
+                    2,
+                    60
+                )
+            );
         }
 
         $pdf = Pdf::loadView('assets.pdf_label', compact('assets'));
