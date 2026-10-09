@@ -7,16 +7,17 @@
         <p class="text-sm text-gray-500 mt-1">Review dan validasi permintaan perubahan atau penghapusan aset dari Admin.</p>
     </x-slot>
 
-    <div class="py-8" x-data="{ 
-        showRejectModal: false, 
-        rejectId: '', 
+    <div class="management-page approvals-page" x-data="{
+        showRejectModal: false,
+        rejectId: '',
         rejectAction: '',
-        rejectType: '' 
+        rejectType: ''
     }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
 
+            <div class="management-intro"><div><h3>Persetujuan perubahan</h3><p>Tinjau pengajuan, bandingkan perubahan, lalu tentukan persetujuannya.</p></div></div>
             {{-- Tabs --}}
-            <div class="flex items-center gap-2 mb-4 px-4 sm:px-0 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
+            <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
                 <a href="{{ route('approvals.index', ['status' => 'pending']) }}"
                    class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'pending' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                     Menunggu Validasi
@@ -35,8 +36,8 @@
                 </a>
             </div>
 
-            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <div class="management-panel bg-white overflow-hidden flex flex-col">
+                <div class="management-panel-heading">
                     <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                         <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         {{ $status === 'pending' ? 'Tiket Menunggu Validasi' : ($status === 'approved' ? 'Tiket Disetujui' : ($status === 'rejected' ? 'Tiket Ditolak' : 'Semua Tiket Validasi')) }}
@@ -48,7 +49,7 @@
 
                 {{-- Desktop Table --}}
                 <div class="overflow-x-auto hidden md:block">
-                    <table class="w-full text-left border-collapse">
+                    <table class="management-table approvals-table w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-white border-b border-gray-100 text-[11px] text-gray-400 uppercase tracking-widest">
                                 @if($status === 'pending')
@@ -57,11 +58,11 @@
                                 </th>
                                 @endif
                                 <th class="px-6 py-4 font-bold">Waktu Pengajuan</th>
-                                <th class="px-6 py-4 font-bold">Data Aset</th>
+                                <th class="px-6 py-4 font-bold">Aset / kategori</th>
                                 <th class="px-6 py-4 font-bold">Diajukan Oleh</th>
                                 <th class="px-6 py-4 font-bold">Tipe Aksi</th>
                                 <th class="px-6 py-4 font-bold">Perbandingan Perubahan</th>
-                                <th class="px-6 py-4 font-bold text-right">{{ $status === 'pending' ? 'Tindakan Eksekusi' : 'Status' }}</th>
+                                <th class="px-6 py-4 font-bold text-right">{{ $status === 'pending' ? 'Tindakan' : 'Status' }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -74,7 +75,7 @@
                                 @endif
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-bold text-gray-900">{{ $log->created_at->format('d M Y') }}</div>
-                                    <div class="text-[11px] font-mono text-gray-500 mt-0.5">{{ $log->created_at->format('H:i:s A') }}</div>
+                                    <div class="text-[11px] font-mono text-gray-500 mt-0.5">{{ $log->created_at->format('H:i') }}</div>
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($log->log_type === 'asset')
@@ -109,7 +110,7 @@
                                 </td>
                                 <td class="px-6 py-4 align-top">
                                     @if($log->action === 'update' && !empty($log->changed_fields))
-                                        <div class="space-y-2 max-w-md">
+                                        <div class="approval-changes space-y-2 max-w-md">
                                             @foreach($log->changed_fields as $field => $values)
                                                 <div class="border border-gray-200 rounded-lg p-2 bg-gray-50">
                                                     <div class="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1">{{ str_replace('_', ' ', $field) }}</div>
@@ -127,7 +128,7 @@
                                 <td class="px-6 py-4 text-right">
                                     @if($log->status === 'pending')
                                         <div class="flex items-center justify-end gap-2">
-                                            <button type="button" 
+                                            <button type="button"
                                                 @click="showRejectModal = true; rejectId = '{{ $log->id }}'; rejectAction = '{{ strtoupper($log->action) }}'; rejectType = '{{ $log->log_type }}'"
                                                 class="inline-flex items-center px-4 py-2 bg-white border border-red-200 text-red-600 text-xs font-bold rounded-lg hover:bg-red-50 hover:border-red-300 transition shadow-sm cursor-pointer">
                                                 Tolak
@@ -160,12 +161,12 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-16 text-center">
+                                <td colspan="{{ $status === 'pending' ? 7 : 6 }}" class="px-6 py-16 text-center">
                                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 mb-4 shadow-inner border border-emerald-100">
                                         <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-gray-900 mb-1">Antrean Kosong</h3>
-                                    <p class="text-sm text-gray-500">Tidak ada permintaan yang menunggu untuk divalidasi.</p>
+                                    <h3 class="text-base font-bold text-gray-900 mb-1">Tidak ada pengajuan</h3>
+                                    <p class="text-sm text-gray-500">Tidak ada pengajuan pada status yang dipilih.</p>
                                 </td>
                             </tr>
                             @endforelse
@@ -221,7 +222,7 @@
                         @endif
                         @if($log->status === 'pending')
                             <div class="flex gap-2">
-                                <button type="button" 
+                                <button type="button"
                                     @click="showRejectModal = true; rejectId = '{{ $log->id }}'; rejectAction = '{{ strtoupper($log->action) }}'; rejectType = '{{ $log->log_type }}'"
                                     class="flex-1 px-3 py-2 bg-white border border-red-200 text-red-600 text-xs font-bold rounded-lg hover:bg-red-50 transition cursor-pointer text-center">
                                     Tolak
@@ -257,8 +258,8 @@
                         <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 mb-3">
                             <svg class="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
-                        <h3 class="text-sm font-bold text-gray-900 mb-1">Antrean Kosong</h3>
-                        <p class="text-xs text-gray-500">Tidak ada permintaan pending.</p>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Tidak ada pengajuan</h3>
+                        <p class="text-xs text-gray-500">Tidak ada pengajuan pada status yang dipilih.</p>
                     </div>
                     @endforelse
                 </div>
@@ -268,7 +269,7 @@
                         {{ $pendingLogs->links('pagination.custom') }}
                     </div>
                 @endif
-                
+
             </div>
 
             {{-- Bulk Action Bar (floating) --}}
@@ -278,7 +279,7 @@
                     <span class="bg-indigo-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg" id="bulk-count-badge">0</span>
                     <span class="text-sm font-bold tracking-tight" id="bulk-count-label">tiket dipilih</span>
                 </div>
-                
+
                 <div class="h-6 w-px bg-white/20"></div>
 
                 <div class="flex items-center gap-2">
@@ -315,9 +316,9 @@
                 <div class="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-gray-100">
                     <h3 class="text-xl font-black text-gray-900 mb-2">Tolak Massal</h3>
                     <p class="text-sm text-gray-500 mb-5">Berikan alasan penolakan untuk <span class="bulk-selected-count font-bold text-red-600"></span> tiket yang dipilih.</p>
-                    
+
                     <textarea id="bulk-rejection-note-textarea" rows="3" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder-gray-300" placeholder="Contoh: Lampiran tidak lengkap, data tidak valid..."></textarea>
-                    
+
                     <div class="flex justify-end gap-3 mt-6">
                         <button type="button" onclick="closeBulkRejectModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition">Batal</button>
                         <button type="button" onclick="submitBulkReject()" class="px-6 py-2.5 bg-red-600 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-500 shadow-lg shadow-red-500/30 transition">Tolak Semua</button>
@@ -330,7 +331,7 @@
             <div x-show="showRejectModal" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm" @click="showRejectModal = false"></div>
             <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
                 <div x-show="showRejectModal" x-transition class="relative bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-gray-100 p-6">
-                    
+
                     <div class="flex items-center gap-3 mb-5">
                         <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0 border border-red-200">
                             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -340,7 +341,7 @@
                             <p class="text-xs text-gray-500 mt-0.5">Anda akan menolak aksi <span x-text="rejectAction" class="font-bold text-red-600"></span> ini.</p>
                         </div>
                     </div>
-                    
+
                     <form method="POST" :action="`/approvals/${rejectType}/${rejectId}/reject`">
                         @csrf
                         <div class="mb-5 bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -379,7 +380,7 @@
                 bulkBar.classList.add('flex');
                 bulkCountBadge.textContent = count;
                 bulkCountLbl.textContent = count > 1 ? 'tiket dipilih' : 'tiket dipilih';
-                
+
                 // Update hidden inputs
                 [approveIdsContainer, rejectIdsContainer].forEach(container => {
                     container.innerHTML = '';
@@ -402,7 +403,7 @@
                 if (this.checked) selectedIds.add(this.value);
                 else selectedIds.delete(this.value);
                 syncBulkBar();
-                
+
                 // Update select all state
                 const allChecked = Array.from(checkboxes).every(c => c.checked);
                 if (selectAll) selectAll.checked = allChecked;

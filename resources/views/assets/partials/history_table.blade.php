@@ -1,7 +1,8 @@
-<div class="bg-white overflow-hidden sm:rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+<div class="management-panel bg-white overflow-hidden">
+    <div class="management-panel-heading"><h3>Daftar peminjaman</h3><span>{{ $transactions->firstItem() ?? 0 }}–{{ $transactions->lastItem() ?? 0 }} dari {{ $transactions->total() }} transaksi</span></div>
     {{-- Desktop Table --}}
     <div class="overflow-x-auto hidden md:block">
-        <table class="min-w-full text-left border-collapse">
+        <table class="management-table history-table w-full text-left border-collapse">
             <thead>
                 <tr class="bg-gray-50/80 text-gray-500 text-[11px] font-extrabold uppercase tracking-wider border-b border-gray-100">
                     <th class="px-5 py-4">Aset</th>
@@ -41,9 +42,9 @@
                             {{ $transaction->duration_days ? $transaction->duration_days . ' hari' : '-' }}
                         </td>
                         <td class="px-5 py-4 text-center">
-                            <span class="inline-block px-3 py-1 text-[10px] font-bold uppercase rounded-full {{ $statusClass }}">{{ $transaction->status }}</span>
+                            <span class="management-badge inline-block px-3 py-1 text-[10px] font-bold uppercase rounded-full {{ $statusClass }}">{{ match($transaction->status) { 'borrowed' => 'Sedang dipinjam', 'returned' => 'Sudah kembali', 'overdue' => 'Terlambat', default => $transaction->status } }}</span>
                         </td>
-                        <td class="px-5 py-4 text-sm text-gray-500 italic max-w-xs truncate" title="{{ $transaction->notes }}">
+                        <td class="px-5 py-4 history-notes text-sm text-gray-500 max-w-xs" title="{{ $transaction->notes }}">
                             {{ $transaction->notes ?? '-' }}
                         </td>
                     </tr>
@@ -80,7 +81,7 @@
                         <h4 class="font-bold text-gray-900 text-sm truncate">{{ $transaction->asset->name ?? '-' }}</h4>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span class="font-mono text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{{ $transaction->asset->asset_tag ?? '-' }}</span>
-                            <span class="px-2 py-0.5 text-[9px] font-bold uppercase rounded-full {{ $statusColor }}">{{ $transaction->status }}</span>
+                            <span class="management-badge px-2 py-0.5 text-[9px] font-bold uppercase rounded-full {{ $statusColor }}">{{ match($transaction->status) { 'borrowed' => 'Sedang dipinjam', 'returned' => 'Sudah kembali', 'overdue' => 'Terlambat', default => $transaction->status } }}</span>
                         </div>
                     </div>
                 </div>

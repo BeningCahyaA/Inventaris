@@ -6,15 +6,16 @@
         </h2>
     </x-slot>
 
-    <div class="asset-subpage" x-data="{ showFilters: false }">
+    <div class="asset-subpage management-page history-page" x-data="{ showFilters: false }">
         <div class="max-w-7xl mx-auto">
+            <div class="management-intro"><div><h3>Riwayat peminjaman</h3><p>Pantau peminjam, jatuh tempo, dan status pengembalian aset.</p></div></div>
             {{-- Modern Responsive Filter Bar --}}
             <div class="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
                 <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
                     <div class="flex items-center gap-2 flex-1 relative">
                         {{-- Funnel Filter Button & Dropdown --}}
                         <div class="relative" @click.outside="showFilters = false">
-                            <button type="button" @click="showFilters = !showFilters" 
+                            <button type="button" @click="showFilters = !showFilters"
                                 class="inline-flex items-center justify-center p-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-indigo-600 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0"
                                 :class="showFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : ''"
                                 title="Filter Data">
@@ -25,7 +26,7 @@
                             <div x-show="showFilters" x-transition.opacity x-cloak
                                 class="absolute left-0 top-full mt-2 w-[calc(100vw-40px)] sm:w-[500px] z-50 bg-white border border-gray-200 rounded-xl shadow-2xl p-5 space-y-4">
                                 <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-3">Filter Riwayat</h4>
-                                
+
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Transaksi</label>
@@ -55,7 +56,7 @@
                                         <input type="date" id="date-to" value="{{ request('date_to') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Sampai tanggal">
                                     </div>
                                 </div>
-                                
+
                                 <div class="pt-2 border-t border-gray-100 flex justify-end">
                                     <button type="button" @click="showFilters = false" class="text-sm font-bold bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
                                         Oke
@@ -69,8 +70,8 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" id="search-input" value="{{ request('search') }}" 
-                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition shadow-inner" 
+                            <input type="search" aria-label="Cari riwayat peminjaman" id="search-input" value="{{ request('search') }}"
+                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition shadow-inner"
                                 placeholder="Cari peminjam, nama aset atau tag...">
                         </div>
                     </div>
@@ -78,7 +79,7 @@
             </div>
 
             <div id="table-container" class="w-full flex flex-col gap-4">
-                @include('assets.partials.history_table') 
+                @include('assets.partials.history_table')
             </div>
         </div>
     </div>

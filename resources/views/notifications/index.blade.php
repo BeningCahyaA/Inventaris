@@ -4,11 +4,12 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Pusat Notifikasi</h2>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
+    <div class="notifications-page">
+        <div class="max-w-7xl mx-auto space-y-4">
 
+            <div class="management-intro"><div><h3>Notifikasi Anda</h3><p>Pantau pembaruan aset, pengajuan, dan hasil persetujuan.</p></div></div>
             {{-- Header bar --}}
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="notification-toolbar flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
                     <a href="{{ route('notifications.index', ['tab' => 'unread']) }}"
                        class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition
@@ -32,7 +33,7 @@
                     </a>
                 </div>
 
-                <div class="flex items-center gap-4 shrink-0">
+                <div class="notification-toolbar-actions flex flex-wrap items-center gap-3">
                     @if($unreadCount > 0)
                         <form method="POST" action="{{ route('notifications.read-all') }}">
                             @csrf
@@ -63,7 +64,7 @@
 
             {{-- List --}}
             @if($notifications->total() > 0)
-                <div class="space-y-2">
+                <div class="notification-feed management-panel">
                     @foreach($notifications as $notif)
                         @php
                             $data   = $notif->data;
@@ -86,8 +87,8 @@
                             }
                         @endphp
 
-                        <div class="flex items-start gap-4 bg-white border rounded-xl p-4 shadow-sm transition
-                                    {{ $isRead ? 'border-gray-200 opacity-80' : 'border-indigo-200 bg-indigo-50/30' }}">
+                        <div class="notification-card flex items-start gap-4 transition
+                                    {{ $isRead ? 'notification-read' : 'notification-unread' }}">
 
                             {{-- Icon --}}
                             <div class="shrink-0 w-9 h-9 rounded-full {{ $iconBg }} flex items-center justify-center mt-0.5">
@@ -116,12 +117,12 @@
                             </div>
 
                             {{-- Action --}}
-                            <div class="shrink-0 flex items-center gap-3">
+                            <div class="notification-actions shrink-0 flex items-center gap-2">
                                 @if(!$isRead)
                                     <form method="POST" action="{{ route('notifications.read', $notif->id) }}">
                                         @csrf
                                         <button type="submit"
-                                                title="Tandai sudah dibaca"
+                                                title="Tandai sudah dibaca" aria-label="Tandai sudah dibaca"
                                                 class="text-indigo-500 hover:text-indigo-700 transition cursor-pointer">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                         </button>
@@ -130,14 +131,14 @@
                                 @if(!empty($data['link']))
                                     <a href="{{ $data['link'] }}"
                                        class="text-gray-400 hover:text-gray-600 transition"
-                                       title="Buka halaman terkait">
+                                       title="Buka halaman terkait" aria-label="Buka halaman terkait">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                     </a>
                                 @endif
                                 <form method="POST" action="{{ route('notifications.destroy', $notif->id) }}" id="delete-notif-{{ $notif->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" onclick="confirmDelete('{{ $notif->id }}')" class="text-red-400 hover:text-red-600 transition cursor-pointer" title="Hapus notifikasi">
+                                    <button type="button" onclick="confirmDelete('{{ $notif->id }}')" class="text-red-400 hover:text-red-600 transition cursor-pointer" title="Hapus notifikasi" aria-label="Hapus notifikasi">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>

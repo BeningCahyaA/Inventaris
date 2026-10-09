@@ -65,8 +65,8 @@
                                      x-transition:leave="transition ease-in duration-150"
                                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                                     class="fixed w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
-                                     x-bind:style="(() => { const r = $refs.notifBtn.getBoundingClientRect(); return 'top: ' + (r.bottom + 8) + 'px; right: ' + (window.innerWidth - r.right) + 'px;'; })()"
+                                     class="notification-dropdown fixed w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
+                                     x-bind:style="(() => { const r = $refs.notifBtn.getBoundingClientRect(); return 'top: ' + (r.bottom + 8) + 'px; right: ' + Math.max(16, window.innerWidth - r.right) + 'px;'; })()"
                                      style="display: none;">
 
                                     {{-- Dropdown Header --}}

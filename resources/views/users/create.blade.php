@@ -1,73 +1,59 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Add New User') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl">
-                <div class="p-8 bg-white border-b border-gray-200">
-                    
-                    <form action="{{ route('users.store') }}" method="POST">
-                        @csrf
-
-                        <div class="mb-5">
-                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Username*</label>
-                            <input type="text" name="name" id="name" required
-                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-                                placeholder="Masukkan nama pengguna">
-                            @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="mb-5">
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email*</label>
-                            <input type="email" name="email" id="email" required
-                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-                                placeholder="contoh@email.com">
-                            @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password*</label>
-                                <input type="password" name="password" id="password" required
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
-                                @error('password') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+    <x-slot name="title">Tambah User</x-slot>
+    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah User</h2></x-slot>
+    <div class="user-create-page">
+        <div class="user-create-container">
+            <a href="{{ route('users.index') }}" class="user-form-back">← Kembali ke daftar user</a>
+            <div class="management-intro"><div><h3>Tambah pengguna baru</h3><p>Lengkapi informasi akun dan tentukan hak akses pengguna.</p></div></div>
+            <div class="management-panel">
+                <div class="management-panel-heading"><h3>Informasi pengguna</h3><span>Semua kolom wajib diisi</span></div>
+                <form action="{{ route('users.store') }}" method="POST">
+                    @csrf
+                    <div class="user-form-fields">
+                        <div class="user-form-grid">
+                            <div class="user-form-field">
+                                <label for="name">Nama pengguna <span>*</span></label>
+                                <input type="text" name="name" id="name" value="{{ old('name') }}" required maxlength="255" autocomplete="name" placeholder="Masukkan nama pengguna" @error('name') aria-invalid="true" aria-describedby="name-error" @enderror>
+                                @error('name') <p id="name-error" class="user-form-error">{{ $message }}</p> @enderror
                             </div>
-
-                            <div>
-                                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password*</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" required
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
+                            <div class="user-form-field">
+                                <label for="email">Email <span>*</span></label>
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" required maxlength="255" autocomplete="email" placeholder="nama@perusahaan.com" @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
+                                @error('email') <p id="email-error" class="user-form-error">{{ $message }}</p> @enderror
                             </div>
                         </div>
-
-                        <div class="mb-8">
-                            <label for="role" class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
-                            <select name="role" id="role"
-                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 cursor-pointer">
-                                <option value="" disabled selected>Pilih Role</option>
-                                <option value="super_admin">Super Admin</option>
-                                <option value="admin">Admin</option>
+                        <fieldset class="user-form-section">
+                            <legend>Keamanan akun</legend>
+                            <p class="user-form-help">Buat kata sandi dan masukkan kembali untuk konfirmasi.</p>
+                            <div class="user-form-grid">
+                                <div class="user-form-field">
+                                    <label for="password">Kata sandi <span>*</span></label>
+                                    <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="Masukkan kata sandi" @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
+                                    @error('password') <p id="password-error" class="user-form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="user-form-field">
+                                    <label for="password_confirmation">Konfirmasi kata sandi <span>*</span></label>
+                                    <input type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password" placeholder="Ulangi kata sandi" @error('password_confirmation') aria-invalid="true" aria-describedby="confirmation-error" @enderror>
+                                    @error('password_confirmation') <p id="confirmation-error" class="user-form-error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="user-form-section user-form-field">
+                            <label for="role">Hak akses <span>*</span></label>
+                            <select name="role" id="role" required aria-describedby="role-help{{ $errors->has('role') ? ' role-error' : '' }}" @error('role') aria-invalid="true" @enderror>
+                                <option value="" disabled @selected(!old('role'))>Pilih hak akses</option>
+                                <option value="admin" @selected(old('role') === 'admin')>Admin</option>
+                                <option value="super_admin" @selected(old('role') === 'super_admin')>Super Admin</option>
                             </select>
+                            <p id="role-help" class="user-form-help">Admin mengelola aset. Super Admin juga mengelola pengguna dan persetujuan.</p>
+                            @error('role') <p id="role-error" class="user-form-error">{{ $message }}</p> @enderror
                         </div>
-
-                        <div class="flex items-center gap-3">
-                            <button type="submit" 
-                                class="inline-flex items-center px-6 py-2.5 bg-indigo-600 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md cursor-pointer">
-                                Simpan
-                            </button>
-
-                            <a href="{{ route('users.index') }}" 
-                                class="inline-flex items-center px-6 py-2.5 bg-gray-500 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-widest hover:bg-gray-600 focus:bg-gray-600 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
-                                Batal
-                            </a>
-                        </div>
-
-                    </form>
-                </div>
+                    </div>
+                    <div class="user-form-actions">
+                        <a href="{{ route('users.index') }}" class="user-form-cancel">Batal</a>
+                        <button type="submit" class="user-form-submit">Simpan pengguna</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
