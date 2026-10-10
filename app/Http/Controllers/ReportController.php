@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class ReportController extends Controller
 {
@@ -62,7 +62,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Preview & cetak label QR Code.
+     * Preview & cetak label barcode aset.
      */
     public function printPreview(Request $request): View|string
     {
@@ -87,7 +87,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Download PDF label QR Code (selektif atau semua).
+     * Download PDF label barcode dan nama produk (selektif atau semua).
      */
     public function downloadPdf(Request $request): HttpResponse
     {
@@ -99,7 +99,7 @@ class ReportController extends Controller
             $assets = Asset::orderBy('id', 'asc')->get();
         }
 
-        $generator = new BarcodeGeneratorPNG();
+        $generator = new BarcodeGeneratorSVG();
 
         foreach ($assets as $asset) {
             $asset->barcode = base64_encode(

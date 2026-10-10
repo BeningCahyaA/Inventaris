@@ -28,7 +28,7 @@
         <nav aria-label="Aksi cepat" class="flex flex-wrap gap-2">
             @foreach([
             ['url' => route('assets.index'), 'label' => 'Lihat semua aset →'],
-            ['url' => route('scanner.index'), 'label' => 'Scan QR aset'],
+            ['url' => route('scanner.index'), 'label' => 'Scan Barcode aset'],
             ['url' => route('assets.history'), 'label' => 'Riwayat peminjaman'],
             ['url' => $isSuperAdmin ? route('approvals.index') : route('approvals.my-tickets'), 'label' => $isSuperAdmin ? 'Proses persetujuan' : 'Lihat tiket saya'],
             ] as $shortcut)

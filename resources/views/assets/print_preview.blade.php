@@ -12,7 +12,8 @@
         <div class="max-w-7xl mx-auto">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900">Siapkan label aset</h3>
-                <p class="mt-2 text-sm text-gray-500">Cari dan pilih aset, lalu klik Cetak label untuk membuka PDF. Pilihan tetap tersimpan saat berpindah halaman.</p>
+                <p class="mt-2 text-sm text-gray-500">Cari dan pilih aset, lalu klik Cetak label untuk membuka PDF berisi nama produk, barcode yang bisa dipindai, dan kode aset. Pilihan tetap tersimpan saat berpindah halaman.</p>
+                <p class="mt-1 text-sm text-gray-500">Cetak pada ukuran asli (100%) agar barcode mudah dipindai, lalu cocokkan nama produk sebelum menempelkan label ke barang.</p>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border border-gray-100">

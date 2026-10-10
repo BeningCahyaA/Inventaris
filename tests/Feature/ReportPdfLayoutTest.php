@@ -5,10 +5,41 @@ namespace Tests\Feature;
 use App\Models\Asset;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 use Tests\TestCase;
 
 class ReportPdfLayoutTest extends TestCase
 {
+    public function test_product_labels_render_vector_barcodes_and_full_product_names_across_pages(): void
+    {
+        $generator = new BarcodeGeneratorSVG();
+        $assets = collect(range(1, 13))->map(function ($number) use ($generator) {
+            $asset = new Asset([
+                'asset_tag' => sprintf('IT-26-%03d', $number),
+                'name' => 'Laptop Lenovo ThinkPad untuk ruang administrasi & operasional '.$number,
+            ]);
+            $asset->barcode = base64_encode($generator->getBarcode(
+                $asset->asset_tag, $generator::TYPE_CODE_128, 2, 60
+            ));
+
+            return $asset;
+        });
+
+        $html = view('assets.pdf_label', compact('assets'))->render();
+        $this->assertSame(13, substr_count($html, 'data:image/svg+xml;base64,'));
+        foreach ($assets as $asset) {
+            $this->assertStringContainsString(e($asset->name), $html);
+            $this->assertStringContainsString($asset->asset_tag, $html);
+        }
+
+        $pdf = Pdf::loadView('assets.pdf_label', compact('assets'))->setPaper('a4', 'portrait');
+        $pdf->render();
+
+        $this->assertStringStartsWith('%PDF-', $pdf->output());
+        $this->assertGreaterThan(1, $pdf->getDomPDF()->getCanvas()->get_page_count());
+        $this->assertLessThanOrEqual(3, $pdf->getDomPDF()->getCanvas()->get_page_count());
+    }
+
     public function test_report_does_not_expand_each_asset_row_to_a_full_page(): void
     {
         $this->actingAs(User::factory()->make(['role' => 'admin']));
