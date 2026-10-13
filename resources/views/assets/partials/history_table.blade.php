@@ -24,9 +24,9 @@
                             default => 'bg-gray-100 text-gray-700 border border-gray-200',
                         };
                     @endphp
-                    <tr class="hover:bg-indigo-50/40 transition-colors duration-200 group">
+                    <tr class="hover:bg-purple-50/40 transition-colors duration-200 group">
                         <td class="px-5 py-4">
-                            <div class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ $transaction->asset->name ?? '-' }}</div>
+                            <div class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors">{{ $transaction->asset->name ?? '-' }}</div>
                             <div class="text-[10px] text-gray-500 font-mono mt-0.5">{{ $transaction->asset->asset_tag ?? '-' }}</div>
                         </td>
                         <td class="px-5 py-4 text-sm text-gray-700 font-medium">{{ $transaction->borrower_name }}</td>
@@ -74,7 +74,7 @@
             @endphp
             <div class="px-4 py-4 hover:bg-gray-50 transition-colors">
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="shrink-0 w-10 h-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold shadow-sm">
+                    <div class="shrink-0 w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold shadow-sm">
                         {{ $prefix }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -93,7 +93,7 @@
                     </div>
                     <div class="space-y-1 text-right">
                         <label class="block text-[9px] uppercase tracking-wider font-bold text-gray-400">Durasi</label>
-                        <div class="text-indigo-600 font-bold">{{ $transaction->duration_days ? $transaction->duration_days . ' hari' : '-' }}</div>
+                        <div class="text-purple-600 font-bold">{{ $transaction->duration_days ? $transaction->duration_days . ' hari' : '-' }}</div>
                     </div>
                     <div class="space-y-1">
                         <label class="block text-[9px] uppercase tracking-wider font-bold text-gray-400">Waktu Pinjam</label>

@@ -37,6 +37,8 @@ final class AssetStatusService
         };
 
         DB::transaction(function () use ($asset, $newStatus, $action, $oldData, $user, $borrowerName, $dueAt, $notes): void {
+            $asset->refresh();
+            abort_if($asset->status === 'sold', 422, 'Aset sudah dijual dan tersimpan di arsip.');
             $asset->update(['status' => $newStatus]);
 
             if ($action === 'check_out') {

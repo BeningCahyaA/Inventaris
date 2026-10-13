@@ -18,7 +18,7 @@
             <label for="email" class="block text-[13px] font-bold text-gray-800 mb-1.5">Email</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                 placeholder="Masukkan Email"
-                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 placeholder-gray-400">
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 placeholder-gray-400">
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -26,7 +26,7 @@
             <label for="password" class="block text-[13px] font-bold text-gray-800 mb-1.5">Password</label>
             <input id="password" type="password" name="password" required autocomplete="current-password"
                 placeholder="••••••••"
-                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 placeholder-gray-400">
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 placeholder-gray-400">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 

@@ -19,19 +19,19 @@
             {{-- Tabs --}}
             <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
                 <a href="{{ route('approvals.index', ['status' => 'pending']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'pending' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'pending' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                     Menunggu Validasi
                 </a>
                 <a href="{{ route('approvals.index', ['status' => 'approved']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'approved' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'approved' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                     Disetujui
                 </a>
                 <a href="{{ route('approvals.index', ['status' => 'rejected']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'rejected' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'rejected' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                     Ditolak
                 </a>
                 <a href="{{ route('approvals.index', ['status' => 'all']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'all' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'all' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                     Semua Riwayat
                 </a>
             </div>
@@ -39,7 +39,7 @@
             <div class="management-panel bg-white overflow-hidden flex flex-col">
                 <div class="management-panel-heading">
                     <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         {{ $status === 'pending' ? 'Tiket Menunggu Validasi' : ($status === 'approved' ? 'Tiket Disetujui' : ($status === 'rejected' ? 'Tiket Ditolak' : 'Semua Tiket Validasi')) }}
                     </h3>
                     <div class="flex items-center gap-3">
@@ -54,7 +54,7 @@
                             <tr class="bg-white border-b border-gray-100 text-[11px] text-gray-400 uppercase tracking-widest">
                                 @if($status === 'pending')
                                 <th class="px-6 py-4 w-10">
-                                    <input type="checkbox" id="select-all-page" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="checkbox" id="select-all-page" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 </th>
                                 @endif
                                 <th class="px-6 py-4 font-bold">Waktu Pengajuan</th>
@@ -67,10 +67,10 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse($pendingLogs as $log)
-                            <tr class="hover:bg-indigo-50/30 transition-colors group">
+                            <tr class="hover:bg-purple-50/30 transition-colors group">
                                 @if($status === 'pending')
                                 <td class="px-6 py-4">
-                                    <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 </td>
                                 @endif
                                 <td class="px-6 py-4">
@@ -79,16 +79,16 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($log->log_type === 'asset')
-                                        <div class="text-sm font-extrabold text-gray-900 group-hover:text-indigo-700 transition-colors">{{ $log->asset->name ?? 'Aset Dihapus / Hilang' }}</div>
+                                        <div class="text-sm font-extrabold text-gray-900 group-hover:text-purple-700 transition-colors">{{ $log->asset->name ?? 'Aset Dihapus / Hilang' }}</div>
                                         <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $log->asset->asset_tag ?? '-' }}</div>
                                     @else
-                                        <div class="text-sm font-extrabold text-gray-900 group-hover:text-indigo-700 transition-colors">{{ $log->category->name ?? 'Kategori Dihapus' }}</div>
-                                        <div class="text-[10px] font-bold text-indigo-600 uppercase mt-0.5">Kategori</div>
+                                        <div class="text-sm font-extrabold text-gray-900 group-hover:text-purple-700 transition-colors">{{ $log->category->name ?? 'Kategori Dihapus' }}</div>
+                                        <div class="text-[10px] font-bold text-purple-600 uppercase mt-0.5">Kategori</div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
-                                        <div class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px]">{{ substr($log->user->name ?? 'S', 0, 1) }}</div>
+                                        <div class="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[10px]">{{ substr($log->user->name ?? 'S', 0, 1) }}</div>
                                         {{ $log->user->name ?? 'Sistem' }}
                                     </div>
                                     <div class="text-[10px] font-bold text-gray-400 uppercase mt-1 pl-6">{{ str_replace('_', ' ', $log->user->role ?? '-') }}</div>
@@ -112,8 +112,12 @@
                                     @if($log->action === 'update' && !empty($log->changed_fields))
                                         <div class="approval-changes space-y-2 max-w-md">
                                             @foreach($log->changed_fields as $field => $values)
+                                                @if($field === 'sale_data')
+                                                    @include('assets.partials.sale-request-summary')
+                                                    @continue
+                                                @endif
                                                 <div class="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                                                    <div class="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1">{{ str_replace('_', ' ', $field) }}</div>
+                                                    <div class="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1">{{ $field === 'depreciation_rate' ? 'Penyusutan per tahun (%)' : str_replace('_', ' ', $field) }}</div>
                                                     <div class="text-[11px] text-red-600"><span class="font-semibold">Lama:</span> {{ is_array($values['old']) ? json_encode($values['old']) : ($values['old'] ?? '-') }}</div>
                                                     <div class="text-[11px] text-emerald-700"><span class="font-semibold">Baru:</span> {{ is_array($values['new']) ? json_encode($values['new']) : ($values['new'] ?? '-') }}</div>
                                                 </div>
@@ -181,7 +185,7 @@
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-3">
                                 @if($status === 'pending')
-                                <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 @endif
                                 <div>
                                     @if($log->log_type === 'asset')
@@ -189,7 +193,7 @@
                                     <div class="text-xs text-gray-500 font-mono">{{ $log->asset->asset_tag ?? '-' }}</div>
                                     @else
                                     <div class="font-bold text-sm text-gray-900">{{ $log->category->name ?? 'Kategori Dihapus' }}</div>
-                                    <div class="text-[10px] font-bold text-indigo-600 uppercase">Kategori</div>
+                                    <div class="text-[10px] font-bold text-purple-600 uppercase">Kategori</div>
                                     @endif
                                 </div>
                             </div>
@@ -201,7 +205,7 @@
                         </div>
                         <div class="flex items-center gap-3 text-xs text-gray-500">
                             <span class="flex items-center gap-1">
-                                <div class="w-4 h-4 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[8px] font-bold">{{ substr($log->user->name ?? 'S', 0, 1) }}</div>
+                                <div class="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[8px] font-bold">{{ substr($log->user->name ?? 'S', 0, 1) }}</div>
                                 {{ $log->user->name ?? 'Sistem' }}
                             </span>
                             <span>·</span>
@@ -210,8 +214,12 @@
                         @if($log->action === 'update' && !empty($log->changed_fields))
                             <div class="space-y-1.5">
                                 @foreach($log->changed_fields as $field => $values)
+                                    @if($field === 'sale_data')
+                                        @include('assets.partials.sale-request-summary')
+                                        @continue
+                                    @endif
                                     <div class="border border-gray-200 rounded p-2 bg-gray-50">
-                                        <div class="text-[10px] font-bold uppercase text-gray-500 mb-0.5">{{ str_replace('_', ' ', $field) }}</div>
+                                        <div class="text-[10px] font-bold uppercase text-gray-500 mb-0.5">{{ $field === 'depreciation_rate' ? 'Penyusutan per tahun (%)' : str_replace('_', ' ', $field) }}</div>
                                         <div class="text-[11px] text-red-600">Lama: {{ is_array($values['old']) ? json_encode($values['old']) : ($values['old'] ?? '-') }}</div>
                                         <div class="text-[11px] text-emerald-700">Baru: {{ is_array($values['new']) ? json_encode($values['new']) : ($values['new'] ?? '-') }}</div>
                                     </div>
@@ -276,7 +284,7 @@
             <div id="bulk-action-bar"
                  class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900/90 backdrop-blur-md text-white rounded-2xl shadow-2xl px-6 py-3 flex items-center gap-5 border border-white/10 min-w-[320px] md:min-w-[450px]">
                 <div class="flex items-center gap-2">
-                    <span class="bg-indigo-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg" id="bulk-count-badge">0</span>
+                    <span class="bg-purple-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg" id="bulk-count-badge">0</span>
                     <span class="text-sm font-bold tracking-tight" id="bulk-count-label">tiket dipilih</span>
                 </div>
 

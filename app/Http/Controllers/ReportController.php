@@ -20,7 +20,7 @@ class ReportController extends Controller
      */
     public function exportReport(): HttpResponse
     {
-        $assets = Asset::orderBy('category')->orderBy('name')->get();
+        $assets = Asset::active()->orderBy('category')->orderBy('name')->get();
 
         // Ringkasan umum
         $summary = [
@@ -66,7 +66,7 @@ class ReportController extends Controller
      */
     public function printPreview(Request $request): View|string
     {
-        $query = Asset::query();
+        $query = Asset::active();
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -92,11 +92,11 @@ class ReportController extends Controller
     public function downloadPdf(Request $request): HttpResponse
     {
         if ($request->has('selected_assets')) {
-            $assets = Asset::whereIn('id', $request->selected_assets)
+            $assets = Asset::active()->whereIn('id', $request->selected_assets)
                 ->orderBy('id', 'asc')
                 ->get();
         } else {
-            $assets = Asset::orderBy('id', 'asc')->get();
+            $assets = Asset::active()->orderBy('id', 'asc')->get();
         }
 
         $generator = new BarcodeGeneratorSVG();
@@ -123,7 +123,7 @@ class ReportController extends Controller
      */
     public function exportCsv(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $query = Asset::query();
+        $query = Asset::active();
 
         if ($request->filled('search')) {
             $search = $request->search;

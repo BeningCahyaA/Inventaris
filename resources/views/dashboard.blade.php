@@ -14,9 +14,9 @@
         <section class="dashboard-welcome rounded-2xl p-5 sm:p-7" aria-labelledby="dashboard-intro">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                 <div class="min-w-0">
-                    <p class="text-xs font-semibold tracking-wider text-indigo-200 uppercase">Ringkasan inventaris</p>
+                    <p class="text-xs font-semibold tracking-wider text-purple-200 uppercase">Ringkasan inventaris</p>
                     <h1 id="dashboard-intro" class="mt-2 text-2xl sm:text-3xl font-bold break-words">Selamat datang, {{ auth()->user()->name }}</h1>
-                    <p class="mt-2 text-sm text-indigo-100 leading-relaxed">Pantau ketersediaan aset dan temukan pekerjaan yang perlu ditindaklanjuti.</p>
+                    <p class="mt-2 text-sm text-purple-100 leading-relaxed">Pantau ketersediaan aset dan temukan pekerjaan yang perlu ditindaklanjuti.</p>
                 </div>
                 @if($canManageAssets)
                 <a href="{{ route('assets.create') }}" class="dashboard-add-asset inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><span aria-hidden="true" class="text-lg">+</span> Tambah aset</a>
@@ -32,7 +32,7 @@
             ['url' => route('assets.history'), 'label' => 'Riwayat peminjaman'],
             ['url' => $isSuperAdmin ? route('approvals.index') : route('approvals.my-tickets'), 'label' => $isSuperAdmin ? 'Proses persetujuan' : 'Lihat tiket saya'],
             ] as $shortcut)
-            <a href="{{ $shortcut['url'] }}" class="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:border-indigo-400 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-indigo-600">{{ $shortcut['label'] }}</a>
+            <a href="{{ $shortcut['url'] }}" class="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:border-purple-400 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-purple-600">{{ $shortcut['label'] }}</a>
             @endforeach
         </nav>
         @endif
@@ -80,7 +80,7 @@
                     <p id="stat-{{ $card['id'] }}" class="mt-2 text-2xl font-bold tabular-nums">{{ $card['count'] }}</p>
                     <p class="mt-1 text-xs text-gray-500">{{ $card['hint'] }}</p>
                     @if($canManageAssets)
-                    <a href="{{ $card['url'] }}" class="inline-block mt-3 py-1 text-xs font-semibold text-indigo-700 hover:underline focus-visible:outline-2 focus-visible:outline-indigo-600">{{ $card['id'] === 'maintenance-aging' ? 'Lihat aset dalam perawatan' : 'Lihat detail' }} →</a>
+                    <a href="{{ $card['url'] }}" class="inline-block mt-3 py-1 text-xs font-semibold text-purple-700 hover:underline focus-visible:outline-2 focus-visible:outline-purple-600">{{ $card['id'] === 'maintenance-aging' ? 'Lihat aset dalam perawatan' : 'Lihat detail' }} →</a>
                     @endif
                 </div>
                 @endforeach
@@ -105,7 +105,7 @@
                     <p id="stat-status-{{ $card['id'] }}" class="mt-2 text-3xl font-bold tabular-nums">{{ $card['value'] }}</p>
                     <p class="mt-2 text-xs">{{ $card['hint'] }}</p>
                     @if($canManageAssets)
-                    <a href="{{ route('assets.index', ['status' => $card['status']]) }}" class="absolute inset-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" aria-label="Lihat aset: {{ $card['label'] }}"></a>
+                    <a href="{{ route('assets.index', ['status' => $card['status']]) }}" class="absolute inset-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600" aria-label="Lihat aset: {{ $card['label'] }}"></a>
                     @endif
                 </div>
                 @endforeach
@@ -178,11 +178,11 @@
                     @forelse($categoryStats as $cat)
                     <div class="dashboard-category-row category-stat-item" data-slug="{{ $cat->slug }}">
                         @if($canManageAssets)
-                        <a href="{{ route('assets.index', ['category' => $cat->slug]) }}" class="text-sm text-gray-700 hover:text-indigo-700 hover:underline break-words focus-visible:outline-2 focus-visible:outline-indigo-600">{{ $cat->name }}</a>
+                        <a href="{{ route('assets.index', ['category' => $cat->slug]) }}" class="text-sm text-gray-700 hover:text-purple-700 hover:underline break-words focus-visible:outline-2 focus-visible:outline-purple-600">{{ $cat->name }}</a>
                         @else
                         <span class="text-sm text-gray-700 break-words">{{ $cat->name }}</span>
                         @endif
-                        <span class="text-sm font-bold text-indigo-700 shrink-0"><span class="category-total">{{ $cat->total }}</span> <span class="text-xs font-normal">aset</span></span>
+                        <span class="text-sm font-bold text-purple-700 shrink-0"><span class="category-total">{{ $cat->total }}</span> <span class="text-xs font-normal">aset</span></span>
                     </div>
                     @empty
                     <p class="col-span-full text-sm text-gray-500">Belum ada kategori yang tercatat.</p>
@@ -199,7 +199,7 @@
                 @if($logs->count() > 0)
                 <div class="space-y-3 md:space-y-4">
                     @foreach($logs as $log)
-                    <div class="border border-gray-200 rounded-lg p-3 md:p-4 hover:border-indigo-200 hover:shadow-sm transition-all bg-white">
+                    <div class="border border-gray-200 rounded-lg p-3 md:p-4 hover:border-purple-200 hover:shadow-sm transition-all bg-white">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1 sm:gap-2 mb-1.5 sm:mb-1">
                             <div class="flex flex-wrap items-center gap-2">
                                 <h4 class="font-bold text-gray-900 text-sm">{{ $log->ref_name }}</h4>

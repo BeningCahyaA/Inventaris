@@ -25,7 +25,7 @@ class DashboardService
         return Cache::remember('dashboard_stats_realtime', 2, function () {
             $now = Carbon::now();
 
-            $stats = Asset::selectRaw("
+            $stats = Asset::active()->selectRaw("
                 COUNT(*) as total_assets,
                 COALESCE(SUM(price), 0) as total_value,
                 SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as status_available,
@@ -37,7 +37,7 @@ class DashboardService
                 SUM(CASE WHEN `condition` = 'rusak_total' THEN 1 ELSE 0 END) as cond_rusak_total
             ")->first();
 
-            $categoryStats = Category::leftJoin('assets', 'categories.slug', '=', 'assets.category')
+            $categoryStats = Category::leftJoin('assets', function ($join) { $join->on('categories.slug', '=', 'assets.category')->where('assets.status', '!=', 'sold')->whereNull('assets.deleted_at'); })
                 ->select('categories.name', 'categories.slug', DB::raw('COUNT(assets.id) as total'))
                 ->groupBy('categories.id', 'categories.name', 'categories.slug')
                 ->orderBy('categories.name')
@@ -49,12 +49,12 @@ class DashboardService
             // Lifecycle monitoring
             $overdueCount = AssetTransaction::where('status', 'overdue')->count();
 
-            $warrantyExpiringCount = Asset::whereNotNull('warranty_expiry_date')
+            $warrantyExpiringCount = Asset::active()->whereNotNull('warranty_expiry_date')
                 ->whereDate('warranty_expiry_date', '>=', $now->toDateString())
                 ->whereDate('warranty_expiry_date', '<=', $now->copy()->addDays(30)->toDateString())
                 ->count();
 
-            $warrantyExpiredCount = Asset::whereNotNull('warranty_expiry_date')
+            $warrantyExpiredCount = Asset::active()->whereNotNull('warranty_expiry_date')
                 ->whereDate('warranty_expiry_date', '<', $now->toDateString())
                 ->count();
 
@@ -65,7 +65,7 @@ class DashboardService
                 ->count();
 
             // Tren penambahan aset per bulan (12 bulan terakhir)
-            $trendRaw = Asset::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+            $trendRaw = Asset::active()->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
                 ->where('created_at', '>=', $now->copy()->subMonths(11)->startOfMonth())
                 ->groupBy('month')
                 ->orderBy('month')

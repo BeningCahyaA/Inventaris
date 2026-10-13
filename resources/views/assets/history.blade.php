@@ -16,8 +16,8 @@
                         {{-- Funnel Filter Button & Dropdown --}}
                         <div class="relative" @click.outside="showFilters = false">
                             <button type="button" @click="showFilters = !showFilters"
-                                class="inline-flex items-center justify-center p-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-indigo-600 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0"
-                                :class="showFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : ''"
+                                class="inline-flex items-center justify-center p-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shrink-0"
+                                :class="showFilters ? 'bg-purple-50 border-purple-200 text-purple-600' : ''"
                                 title="Filter Data">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                             </button>
@@ -30,7 +30,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Transaksi</label>
-                                        <select id="status-filter" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                        <select id="status-filter" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua Status</option>
                                             <option value="borrowed" @selected(request('status') === 'borrowed')>Sedang Dipinjam</option>
                                             <option value="returned" @selected(request('status') === 'returned')>Sudah Kembali</option>
@@ -39,7 +39,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Pinjam (Extra)</label>
-                                        <select id="loan-state-filter" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                        <select id="loan-state-filter" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua status</option>
                                             <option value="borrowed">Sedang dipinjam</option>
                                             <option value="returned">Sudah kembali</option>
@@ -51,14 +51,14 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">Rentang Tanggal Pinjam</label>
                                     <div class="flex items-center gap-2">
-                                        <input type="date" id="date-from" value="{{ request('date_from') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Dari tanggal">
+                                        <input type="date" id="date-from" value="{{ request('date_from') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" title="Dari tanggal">
                                         <span class="text-gray-500 text-xs font-medium shrink-0">s/d</span>
-                                        <input type="date" id="date-to" value="{{ request('date_to') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Sampai tanggal">
+                                        <input type="date" id="date-to" value="{{ request('date_to') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" title="Sampai tanggal">
                                     </div>
                                 </div>
 
                                 <div class="pt-2 border-t border-gray-100 flex justify-end">
-                                    <button type="button" @click="showFilters = false" class="text-sm font-bold bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                                    <button type="button" @click="showFilters = false" class="text-sm font-bold bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition shadow-lg shadow-purple-100">
                                         Oke
                                     </button>
                                 </div>
@@ -71,7 +71,7 @@
                                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
                             <input type="search" aria-label="Cari riwayat peminjaman" id="search-input" value="{{ request('search') }}"
-                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition shadow-inner"
+                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition shadow-inner"
                                 placeholder="Cari peminjam, nama aset atau tag...">
                         </div>
                     </div>

@@ -31,10 +31,15 @@ Route::middleware('auth')->group(function () {
         // CRUD Aset
         Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
         Route::get('/assets/create', [AssetController::class, 'create'])->name('assets.create');
+        Route::get('/assets/archive', [AssetController::class, 'archive'])->name('assets.archive');
+        Route::get('/assets/{id}/sale-proof', [\App\Http\Controllers\AssetAttachmentController::class, 'saleProof'])->name('assets.sale-proof');
+        Route::get('/asset-sale-requests/{logId}/proof', [\App\Http\Controllers\AssetAttachmentController::class, 'saleRequestProof'])->name('assets.sale-request-proof');
         Route::post('/assets/store', [AssetController::class, 'store'])->name('assets.store');
         Route::get('/assets/{id}/edit', [AssetController::class, 'edit'])->name('assets.edit');
         Route::put('/assets/{id}', [AssetController::class, 'update'])->name('assets.update');
         Route::delete('/assets/{id}', [AssetController::class, 'destroy'])->name('assets.destroy');
+        Route::get('/assets/{id}/attachments/{attachmentId}', [\App\Http\Controllers\AssetAttachmentController::class, 'show'])->name('assets.attachments.show');
+        Route::delete('/assets/{id}/attachments/{attachmentId}', [\App\Http\Controllers\AssetAttachmentController::class, 'destroy'])->name('assets.attachments.destroy');
 
         // CRUD Kategori
         Route::resource('categories', CategoryController::class);

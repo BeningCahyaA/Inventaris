@@ -8,7 +8,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="assetScanner(@json(auth()->user()->role === 'admin'), '{{ route('scanner.resolve') }}', '{{ route('scanner.status') }}', '{{ route('scanner.quick-edit') }}')">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6" x-data="assetScanner(@json(auth()->user()->role === 'admin'), '{{ route('scanner.resolve') }}', '{{ route('scanner.status') }}', '{{ route('scanner.quick-edit') }}')">
 
             {{-- Scanner card --}}
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -16,7 +16,7 @@
                     <h3 class="font-bold text-gray-800">Kamera Scanner</h3>
                     <button @click="toggleScanner()"
                         class="text-sm font-semibold px-3 py-1.5 rounded-lg transition cursor-pointer"
-                        :class="scanning ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'">
+                        :class="scanning ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'">
                         <span x-text="scanning ? 'Stop Kamera' : 'Buka Kamera'"></span>
                     </button>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="p-6">
                     {{-- Camera viewport --}}
                     <div class="w-full rounded-xl overflow-hidden border-2 transition"
-                        :class="scanning ? 'border-indigo-400' : 'border-dashed border-gray-300'"
+                        :class="scanning ? 'border-purple-400' : 'border-dashed border-gray-300'"
                         x-show="scanning || !assetData">
 
                         {{-- Video kamera + garis bantu --}}
@@ -52,9 +52,9 @@
                         <input type="text" x-model="manualTag"
                             placeholder="Atau ketik Asset Tag (misal: NB-26-001)"
                             @keyup.enter="resolveTag(manualTag)"
-                            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                            class="min-w-0 flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                         <button @click="resolveTag(manualTag)"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition cursor-pointer">
+                            class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 transition cursor-pointer">
                             Cari
                         </button>
                     </div>
@@ -62,7 +62,7 @@
             </div>
 
             {{-- Loading --}}
-            <div x-show="loading" class="text-center text-indigo-600 font-semibold py-4">
+            <div x-show="loading" class="text-center text-purple-600 font-semibold py-4">
                 <svg class="animate-spin w-6 h-6 mx-auto mb-1" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -74,14 +74,15 @@
             <div x-show="errorMsg" class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm font-semibold" x-text="errorMsg"></div>
 
             {{-- Asset summary card --}}
-            <div x-show="assetData" x-cloak class="bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-indigo-100 bg-indigo-50/50">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-lg" x-text="assetData?.name"></h3>
-                            <p class="text-xs text-gray-500 font-mono mt-0.5" x-text="assetData?.asset_tag"></p>
+            <div x-show="assetData && !loading" x-cloak aria-label="Hasil scan barcode" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-100 bg-purple-50/50">
+                    <p class="text-xs font-semibold text-purple-700 mb-2">Hasil scan · Aset ditemukan</p>
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-gray-900 text-lg leading-snug break-words" x-text="assetData?.name"></h3>
+                            <p class="text-xs text-gray-600 mt-2">Kode aset <span class="inline-block font-mono font-semibold text-purple-700 bg-white border border-purple-100 rounded px-2 py-1 ml-1 break-all" x-text="assetData?.asset_tag"></span></p>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase"
+                        <span class="self-start shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold"
                             :class="{
                                   'bg-green-100 text-green-700': assetData?.status === 'available',
                                   'bg-blue-100 text-blue-700': assetData?.status === 'in_use',
@@ -93,43 +94,53 @@
                     </div>
                 </div>
 
-                <div class="p-6 space-y-3">
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div><span class="text-gray-400">Kategori:</span> <span class="font-semibold text-gray-800" x-text="assetData?.category ?? '-'"></span></div>
-                        <div><span class="text-gray-400">Lokasi:</span> <span class="font-semibold text-gray-800" x-text="assetData?.location ?? '-'"></span></div>
-                        <div><span class="text-gray-400">Kondisi:</span> <span class="font-semibold text-gray-800" x-text="assetData?.condition ?? '-'"></span></div>
+                <div class="p-4 sm:p-6 space-y-4">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                        <div class="min-w-0"><dt class="text-xs text-gray-500 mb-1">Kategori</dt><dd class="font-semibold text-gray-800 break-words" x-text="detailLabel(assetData?.category)"></dd></div>
+                        <div class="min-w-0"><dt class="text-xs text-gray-500 mb-1">Lokasi</dt><dd class="font-semibold text-gray-800 break-words" x-text="assetData?.location || '-'"></dd></div>
+                        <div class="min-w-0"><dt class="text-xs text-gray-500 mb-1">Kondisi</dt><dd class="font-semibold text-gray-800 break-words" x-text="detailLabel(assetData?.condition)"></dd></div>
+                        <div class="min-w-0"><dt class="text-xs text-gray-500 mb-1">Penanggung jawab (PIC)</dt><dd class="font-semibold text-gray-800 break-words" x-text="assetData?.person_in_charge || '-'"></dd></div>
                         <template x-if="assetData?.borrower">
-                            <div><span class="text-gray-400">Peminjam:</span> <span class="font-semibold text-gray-800" x-text="assetData?.borrower"></span></div>
+                            <div class="min-w-0"><dt class="text-xs text-gray-500 mb-1">Peminjam</dt><dd class="font-semibold text-gray-800 break-words" x-text="assetData?.borrower"></dd></div>
                         </template>
                         <template x-if="assetData?.due_at">
-                            <div><span class="text-gray-400">Jatuh tempo:</span> <span class="font-semibold text-red-600" x-text="assetData?.due_at"></span></div>
+                            <div><dt class="text-xs text-gray-500 mb-1">Jatuh tempo</dt><dd class="font-semibold text-gray-800" x-text="assetData?.due_at"></dd></div>
                         </template>
-                    </div>
+                    </dl>
+                    <template x-if="assetData?.description">
+                        <div class="rounded-lg bg-gray-50 p-3">
+                            <p class="text-xs text-gray-500 mb-1">Deskripsi</p>
+                            <p class="text-sm text-gray-700 whitespace-pre-line break-words" x-text="assetData?.description"></p>
+                        </div>
+                    </template>
 
                     {{-- Action buttons --}}
-                    <div class="pt-3 border-t border-gray-100">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Aksi</p>
+                    <div class="pt-4 border-t border-gray-100">
+                        <p class="text-xs font-semibold text-gray-500 mb-3">Tindakan aset</p>
                         <template x-if="validActions?.length === 0">
                             <p class="text-sm text-gray-400 italic">Tidak ada aksi yang tersedia untuk status ini.</p>
                         </template>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <template x-for="act in validActions" :key="act">
                                 <button @click="selectedAction = act; showActionForm = true"
                                     class="px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer border"
                                     :class="{
                                             'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700': act === 'check_out',
-                                            'bg-blue-600 text-white border-blue-600 hover:bg-blue-700': act === 'check_in',
+                                            'bg-purple-600 text-white border-purple-600 hover:bg-purple-700': act === 'check_in',
                                             'bg-amber-500 text-white border-amber-500 hover:bg-amber-600': act === 'maintenance',
                                         }"
                                     x-text="actionLabel(act)">
                                 </button>
                             </template>
                             {{-- Quick edit — selalu tampil saat aset ditemukan --}}
-                            <button @click="openEditForm()"
+                            <button x-show="assetData?.status !== 'sold'" @click="openEditForm()"
                                 class="px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-                                Edit
+                                Edit aset
                             </button>
                         </div>
+                        <button type="button" @click="startScanner()" :disabled="scanning" class="mt-3 w-full px-4 py-2 rounded-lg text-sm font-semibold text-purple-700 border border-purple-200 hover:bg-purple-50 disabled:opacity-50 transition cursor-pointer">
+                            <span x-text="scanning ? 'Kamera sedang aktif' : 'Scan barang berikutnya'"></span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -153,12 +164,12 @@
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 mb-1">Nama Peminjam</label>
                                     <input type="text" x-model="form.borrower_name" placeholder="Nama lengkap peminjam"
-                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal Jatuh Tempo</label>
                                     <input type="date" x-model="form.due_at"
-                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                                 </div>
                             </div>
                         </template>
@@ -166,13 +177,13 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Catatan (opsional)</label>
                             <textarea x-model="form.notes" rows="2" placeholder="Catatan tambahan..."
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none resize-none"></textarea>
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none resize-none"></textarea>
                         </div>
 
                         <div class="flex gap-2 pt-2">
                             <button @click="submitAction()"
                                 :disabled="submitting"
-                                class="flex-1 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:opacity-60 transition cursor-pointer">
+                                class="flex-1 py-2 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 disabled:opacity-60 transition cursor-pointer">
                                 <span x-text="submitting ? 'Memproses...' : 'Konfirmasi'"></span>
                             </button>
                             <button @click="showActionForm = false"
@@ -207,27 +218,27 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Nama Aset</label>
                             <input type="text" x-model="editForm.name" placeholder="Nama aset"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Lokasi</label>
                             <input type="text" x-model="editForm.location" placeholder="Lokasi penyimpanan"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Penanggung Jawab</label>
                             <input type="text" x-model="editForm.person_in_charge" placeholder="Nama penanggung jawab"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Kategori</label>
                             <input type="text" x-model="editForm.category" placeholder="Kategori aset"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Kondisi</label>
                             <select x-model="editForm.condition"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none bg-white">
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none bg-white">
                                 <option value="">— tidak diubah —</option>
                                 <option value="baik">Baik</option>
                                 <option value="rusak">Rusak</option>
@@ -237,14 +248,14 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">Deskripsi</label>
                             <textarea x-model="editForm.description" rows="3" placeholder="Deskripsi aset (opsional)"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none resize-none"></textarea>
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400 focus:outline-none resize-none"></textarea>
                         </div>
                     </div>
 
                     <div class="px-6 pb-6 pt-4 border-t border-gray-100 flex gap-2 flex-shrink-0">
                         <button @click="submitEdit()"
                             :disabled="editSubmitting"
-                            class="flex-1 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:opacity-60 transition cursor-pointer">
+                            class="flex-1 py-2 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 disabled:opacity-60 transition cursor-pointer">
                             <span x-text="editSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
                         </button>
                         <button @click="showEditForm = false"
@@ -633,9 +644,15 @@
                         available: 'Available',
                         in_use: 'In Use',
                         maintenance: 'Maintenance',
-                        broken: 'Broken'
+                        broken: 'Broken',
+                        sold: 'Dijual · Arsip'
                     };
                     return map[status] ?? status;
+                },
+
+                detailLabel(value) {
+                    if (!value) return '-';
+                    return String(value).replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
                 },
 
                 actionLabel(act) {

@@ -8,7 +8,7 @@
     <table class="category-table asset-table">
         <caption class="sr-only">Daftar aset, penanggung jawab, lokasi, status, dan aksi</caption>
         <thead><tr>
-            <th scope="col" class="asset-check-cell"><input type="checkbox" id="select-all-page" aria-label="Pilih semua aset di halaman ini" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"></th>
+            <th scope="col" class="asset-check-cell"><input type="checkbox" id="select-all-page" aria-label="Pilih semua aset di halaman ini" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"></th>
             <th scope="col">Aset</th><th scope="col">Penanggung jawab & lokasi</th><th scope="col">Kategori & status</th><th scope="col" class="category-actions-heading">Aksi</th>
         </tr></thead>
         <tbody>
@@ -18,7 +18,7 @@
                 $conditionLabel = match($asset->condition) { 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total', default => $asset->condition ?? 'Belum dicatat' };
             @endphp
             <tr>
-                <td class="asset-check-cell"><input type="checkbox" class="asset-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" value="{{ $asset->id }}" data-name="{{ $asset->name }}" aria-label="Pilih aset {{ $asset->name }}"></td>
+                <td class="asset-check-cell"><input type="checkbox" class="asset-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500" value="{{ $asset->id }}" data-name="{{ $asset->name }}" aria-label="Pilih aset {{ $asset->name }}"></td>
                 <td class="asset-name-cell">
                     <a href="{{ route('assets.show', $asset->id) }}" class="category-name asset-name-link">{{ $asset->name }}</a>
                     <span class="asset-tag">{{ $asset->asset_tag }}</span>

@@ -8,15 +8,15 @@
             <div class="flex items-center text-gray-500">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </div>
-            <a href="{{ route('assets.index') }}" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1">
+            <a href="{{ route('assets.index') }}" class="text-sm font-bold text-purple-600 hover:text-purple-800 transition flex items-center gap-1">
                 Kembali
             </a>
         </div>
     </x-slot>
 
     @php
-        $images = $asset->attachments->filter(fn($a) => str_starts_with($a->file_type ?? '', 'image/'));
-        $docs = $asset->attachments->filter(fn($a) => !str_starts_with($a->file_type ?? '', 'image/'));
+        $images = $asset->attachments->filter(fn($a) => $a->isImage());
+        $docs = $asset->attachments->reject(fn($a) => $a->isImage());
     @endphp
 
     <div class="asset-subpage" x-data="{ 
@@ -24,7 +24,7 @@
         activeImage: {{ $images->count() > 0 ? 0 : 'null' }},
         images: [
             @foreach($images as $atch)
-                '{{ Storage::disk('public')->url($atch->file_path) }}',
+                '{{ route('assets.attachments.show', [$asset->id, $atch->id], false) }}',
             @endforeach
         ],
 
@@ -90,7 +90,7 @@
                                 <template x-for="(img, index) in images" :key="index">
                                     <button @click="activeImage = index" 
                                         class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all focus:outline-none"
-                                        :class="activeImage === index ? 'border-indigo-600 shadow-md ring-2 ring-indigo-100' : 'border-transparent opacity-60 hover:opacity-100'">
+                                        :class="activeImage === index ? 'border-purple-600 shadow-md ring-2 ring-purple-100' : 'border-transparent opacity-60 hover:opacity-100'">
                                         <img :src="img" class="w-full h-full object-cover" />
                                     </button>
                                 </template>
@@ -108,9 +108,9 @@
                     <div class="lg:col-span-8 p-6 md:p-8 flex flex-col">
                         <div class="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
                             <div>
-                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-extrabold uppercase tracking-wider rounded-md border border-indigo-100">{{ \App\Models\Category::where('slug', $asset->category)->value('name') ?? $asset->category }}</span>
+                                <span class="px-2.5 py-1 bg-purple-50 text-purple-700 text-[10px] font-extrabold uppercase tracking-wider rounded-md border border-purple-100">{{ \App\Models\Category::where('slug', $asset->category)->value('name') ?? $asset->category }}</span>
                                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-2 leading-tight">{{ $asset->name }}</h1>
-                                <p class="text-sm font-mono text-gray-500 mt-1 flex items-center gap-1.5 text-indigo-600 font-bold">
+                                <p class="text-sm font-mono text-gray-500 mt-1 flex items-center gap-1.5 text-purple-600 font-bold">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                                     {{ $asset->asset_tag }}
                                 </p>
@@ -122,6 +122,7 @@
                                     'in_use' => 'bg-blue-100 text-blue-800 border-blue-200',
                                     'maintenance' => 'bg-amber-100 text-amber-800 border-amber-200',
                                     'broken' => 'bg-red-100 text-red-800 border-red-200',
+                                    'sold' => 'bg-gray-100 text-gray-700 border-gray-200',
                                 ];
                                 $condColors = [
                                     'baik' => 'bg-emerald-50 text-emerald-600',
@@ -131,7 +132,7 @@
                             @endphp
                             <div class="shrink-0 flex flex-wrap sm:flex-col items-start sm:items-end gap-2">
                                 <span class="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border {{ $statusColors[$asset->status] ?? 'bg-gray-100' }}">
-                                    {{ match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', default => $asset->status } }}
+                                    {{ match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual · Arsip', default => $asset->status } }}
                                 </span>
                                 <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider {{ $condColors[$asset->condition] ?? 'bg-gray-100' }}">
                                     Kondisi: {{ str_replace('_', ' ', $asset->condition) }}
@@ -143,14 +144,14 @@
                             <div>
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1 tracking-wider">Penanggung Jawab</p>
                                 <p class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-xs text-indigo-700 font-bold shrink-0">{{ mb_substr($asset->person_in_charge ?? '', 0, 1) ?: '–' }}</span>
+                                    <span class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs text-purple-700 font-bold shrink-0">{{ mb_substr($asset->person_in_charge ?? '', 0, 1) ?: '–' }}</span>
                                     {{ $asset->person_in_charge ?: 'Belum ditentukan' }}
                                 </p>
                             </div>
                             <div>
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1 tracking-wider">Lokasi</p>
                                 <p class="text-sm font-semibold text-gray-800 flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     {{ $asset->location ?? '-' }}
                                 </p>
                             </div>
@@ -162,11 +163,19 @@
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1 tracking-wider">Harga Beli</p>
                                 <p class="text-sm font-bold text-emerald-600 font-mono tracking-tight">Rp {{ number_format($asset->price, 0, ',', '.') }}</p>
                             </div>
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Penyusutan per tahun</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ number_format($asset->depreciation_rate, 2, ',', '.') }}% dari harga beli awal</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Nilai setelah penyusutan</p>
+                                <p class="text-sm font-bold text-purple-700">Rp {{ number_format($depreciatedValue, 2, ',', '.') }}</p>
+                            </div>
                         </div>
 
-                        @if(auth()->user()->role === 'super_admin' || auth()->user()->role === 'admin')
+                        @if($asset->status !== 'sold' && in_array(auth()->user()->role, ['super_admin', 'admin']))
                         <div class="pt-5 border-t border-gray-100 flex gap-3 mt-auto">
-                            <button @click="openEditScanner()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-center py-3 rounded-xl font-bold text-sm transition-all shadow-md shadow-indigo-100 flex items-center justify-center gap-2 cursor-pointer">
+                            <button @click="openEditScanner()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-center py-3 rounded-xl font-bold text-sm transition-all shadow-md shadow-purple-100 flex items-center justify-center gap-2 cursor-pointer">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 Scan Barcode untuk edit
                             </button>
@@ -181,24 +190,34 @@
                 <div class="flex border-b border-gray-100 bg-gray-50/50 overflow-x-auto hide-scrollbar">
                     <button @click="activeTab = 'detail'" 
                         class="px-4 sm:px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-all"
-                        :class="activeTab === 'detail' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
+                        :class="activeTab === 'detail' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
                         Informasi & lampiran
+                    </button>
+                    @if($asset->sale)
+                    <button @click="activeTab = 'sale'" type="button" class="px-4 sm:px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2" :class="activeTab === 'sale' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500'">Riwayat penjualan</button>
+                    @endif
+                    <button @click="activeTab = 'depreciation'" type="button"
+                        class="px-4 sm:px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-all"
+                        :class="activeTab === 'depreciation' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
+                        Riwayat penyusutan
                     </button>
                     <button @click="activeTab = 'history'" 
                         class="px-4 sm:px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-all flex items-center gap-2"
-                        :class="activeTab === 'history' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
+                        :class="activeTab === 'history' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
                         Riwayat Pinjam
-                        <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-[10px]">{{ $asset->transactions->count() }}</span>
+                        <span class="bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full text-[10px]">{{ $asset->transactions->count() }}</span>
                     </button>
                     <button @click="activeTab = 'logs'" 
                         class="px-4 sm:px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-all"
-                        :class="activeTab === 'logs' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
+                        :class="activeTab === 'logs' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'">
                         Riwayat perubahan
                     </button>
                 </div>
 
                 <div class="p-6 md:p-8">
                     {{-- TAB 1: DESKRIPSI --}}
+                    @include('assets.partials.depreciation-history')
+                    @include('assets.partials.sale-history')
                     <div x-show="activeTab === 'detail'" x-transition.opacity>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
@@ -240,8 +259,8 @@
                                 <ul class="space-y-2">
                                     @foreach($docs as $doc)
                                     <li>
-                                        <a href="{{ Storage::disk('public')->url($doc->file_path) }}" target="_blank" class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 transition group">
-                                            <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <a href="{{ route('assets.attachments.show', [$asset->id, $doc->id]) }}" target="_blank" class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 transition group">
+                                            <svg class="w-5 h-5 text-gray-500 group-hover:text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                             <span class="text-sm font-medium text-gray-700 break-all">{{ $doc->file_name }}</span>
                                             <span class="ml-auto text-[10px] text-gray-500 font-mono uppercase">{{ pathinfo($doc->file_name, PATHINFO_EXTENSION) }}</span>
                                         </a>
@@ -301,7 +320,7 @@
                     {{-- TAB 3: LOG AKTIVITAS --}}
                     <div x-show="activeTab === 'logs'" x-transition.opacity style="display: none;">
                         @if($asset->logs->count() > 0)
-                        <div class="relative pl-6 sm:pl-8 border-l-2 border-indigo-100 space-y-8 pb-4">
+                        <div class="relative pl-6 sm:pl-8 border-l-2 border-purple-100 space-y-8 pb-4">
                             @foreach($asset->logs as $log)
                             <div class="relative">
                                 <div class="absolute -left-[35px] sm:-left-[43px] bg-white p-1 rounded-full">
@@ -314,7 +333,7 @@
                                         <span class="text-xs text-gray-500 font-medium">{{ $log->created_at->diffForHumans() }} ({{ $log->created_at->format('H:i') }})</span>
                                     </div>
                                     <p class="text-sm font-medium text-gray-800">
-                                        Aksi diajukan oleh <strong class="text-indigo-600">{{ $log->user->name ?? 'Sistem' }}</strong>.
+                                        Aksi diajukan oleh <strong class="text-purple-600">{{ $log->user->name ?? 'Sistem' }}</strong>.
                                     </p>
                                     @if($log->changes)
                                         <div class="mt-2 bg-gray-50 p-3 rounded-lg border border-gray-100 text-xs font-mono text-gray-600 overflow-x-auto max-h-32 custom-scrollbar">
@@ -355,7 +374,7 @@
                 <div x-show="showEditScanner" x-transition class="relative bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-gray-100">
                     <div class="bg-gray-50 px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"></path></svg>
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"></path></svg>
                             Verifikasi Barcode
                         </h3>
                         <button @click="closeEditScanner()" class="text-gray-500 hover:text-red-600 transition-colors cursor-pointer">

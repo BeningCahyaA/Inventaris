@@ -17,7 +17,7 @@
 
             <div class="management-intro flex flex-wrap justify-between items-center gap-4 mb-5">
                 <div><h3>Kelola pengguna</h3><p>Atur akun dan hak akses pengguna aplikasi.</p></div><a href="{{ route('users.create') }}"
-                   class="inline-flex items-center px-4 py-2.5 bg-indigo-600 rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition shadow-sm">
+                   class="inline-flex items-center px-4 py-2.5 bg-purple-600 rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 transition shadow-sm">
                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                    Tambah User
                 </a>
@@ -27,7 +27,7 @@
                 {{-- Header --}}
                 <div class="management-panel-heading">
                     <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         Daftar User
                     </h3>
                     <span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full">{{ $users->total() }} User</span>
@@ -47,11 +47,11 @@
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @forelse($users as $user)
-                            <tr class="hover:bg-indigo-50/30 transition-colors group">
+                            <tr class="hover:bg-purple-50/30 transition-colors group">
                                 <td class="px-6 py-4 text-center text-sm text-gray-400 font-medium">{{ ($users->firstItem() ?? 1) + $loop->index }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="shrink-0 w-8 h-8 rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700' }} flex items-center justify-center text-xs font-bold">
+                                        <div class="shrink-0 w-8 h-8 rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-purple-100 text-purple-700' }} flex items-center justify-center text-xs font-bold">
                                             {{ strtoupper(substr($user->name, 0, 1)) }}
                                         </div>
                                         <span class="text-sm font-bold text-gray-900">{{ $user->name }}</span>
@@ -59,7 +59,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $user->email }}</td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="px-2.5 py-1 inline-flex text-[10px] leading-5 font-bold rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-50 text-indigo-700' }} uppercase">
+                                    <span class="px-2.5 py-1 inline-flex text-[10px] leading-5 font-bold rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-purple-50 text-purple-700' }} uppercase">
                                         {{ $user->role == 'super_admin' ? 'Super Admin' : ($user->role == 'admin' ? 'Admin' : 'Staff') }}
                                     </span>
                                 </td>
@@ -74,7 +74,7 @@
                                                 updated: '{{ $user->updated_at->format('d M Y, H:i') }}',
                                                 edit_url: '{{ route('users.edit', $user->id) }}'
                                             }"
-                                            class="p-2 text-blue-500 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-sm border border-blue-100 cursor-pointer"
+                                            class="p-2 text-purple-500 bg-purple-50 hover:bg-purple-600 hover:text-white rounded-lg transition-all shadow-sm border border-purple-100 cursor-pointer"
                                             title="Detail pengguna" aria-label="Detail pengguna">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -106,14 +106,14 @@
                     <div class="px-5 py-4">
                         <div class="flex items-center gap-3">
                             {{-- Avatar --}}
-                            <div class="shrink-0 w-10 h-10 rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700' }} flex items-center justify-center text-sm font-bold shadow-sm">
+                            <div class="shrink-0 w-10 h-10 rounded-full {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-purple-100 text-purple-700' }} flex items-center justify-center text-sm font-bold shadow-sm">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
                             {{-- Info --}}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                     <h4 class="text-sm font-bold text-gray-900 truncate">{{ $user->name }}</h4>
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-50 text-indigo-700' }} uppercase whitespace-nowrap">
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $user->role == 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-purple-50 text-purple-700' }} uppercase whitespace-nowrap">
                                         {{ $user->role == 'super_admin' ? 'Super Admin' : ($user->role == 'admin' ? 'Admin' : 'Staff') }}
                                     </span>
                                 </div>
@@ -130,7 +130,7 @@
                                         updated: '{{ $user->updated_at->format('d M Y, H:i') }}',
                                         edit_url: '{{ route('users.edit', $user->id) }}'
                                     }"
-                                    class="p-2 text-blue-500 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-sm border border-blue-100 cursor-pointer">
+                                    class="p-2 text-purple-500 bg-purple-50 hover:bg-purple-600 hover:text-white rounded-lg transition-all shadow-sm border border-purple-100 cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

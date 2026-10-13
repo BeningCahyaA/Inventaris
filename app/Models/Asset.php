@@ -26,6 +26,7 @@ class Asset extends Model
         'status',
         'condition',
         'price',
+        'depreciation_rate',
         'description',
         'location',
         'vendor',
@@ -34,6 +35,7 @@ class Asset extends Model
 
     protected $casts = [
         'purchase_date' => 'date',
+        'depreciation_rate' => 'decimal:2',
         'warranty_expiry_date' => 'date',
     ];
 
@@ -57,5 +59,20 @@ class Asset extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(AssetAttachment::class)->latest();
+    }
+
+    public function depreciations(): HasMany
+    {
+        return $this->hasMany(AssetDepreciation::class);
+    }
+
+    public function sale(): HasOne
+    {
+        return $this->hasOne(AssetSale::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', '!=', 'sold');
     }
 }

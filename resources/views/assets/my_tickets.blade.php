@@ -4,11 +4,14 @@
     @php
         $statusLabels = ['all' => 'Semua tiket', 'pending' => 'Menunggu', 'approved' => 'Disetujui', 'rejected' => 'Ditolak'];
         $fieldLabels = ['name' => 'Nama', 'category' => 'Kategori', 'status' => 'Status aset', 'condition' => 'Kondisi fisik', 'description' => 'Deskripsi', 'purchase_date' => 'Tanggal pembelian', 'warranty_expiry_date' => 'Akhir masa garansi', 'price' => 'Harga pembelian', 'person_in_charge' => 'Penanggung jawab', 'location' => 'Lokasi', 'vendor' => 'Vendor', 'serial_number' => 'Nomor seri', 'borrower_name' => 'Peminjam', 'due_at' => 'Jatuh tempo', 'borrow_notes' => 'Catatan peminjaman', 'notes' => 'Catatan', 'slug' => 'Kode kategori', 'prefix' => 'Awalan kode tag', 'delete_attachments' => 'ID lampiran yang dihapus'];
-        $valueLabels = ['available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total'];
+        $fieldLabels['depreciation_rate'] = 'Penyusutan per tahun (%)';
+        $fieldLabels['sale_data'] = 'Penjualan aset';
+        $valueLabels = ['available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual', 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total'];
         $formatTicketValue = function ($field, $value) use ($valueLabels) {
             if ($value === null || $value === '') return 'Belum diisi';
             if (is_array($value)) return implode(', ', array_map(fn($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : (string) $v, $value)) ?: 'Tidak ada';
             if ($field === 'price' && is_numeric($value)) return 'Rp ' . number_format((float) $value, 0, ',', '.');
+            if ($field === 'depreciation_rate' && is_numeric($value)) return number_format((float) $value, 2, ',', '.') . '%';
             return in_array($field, ['status', 'condition'], true) ? ($valueLabels[$value] ?? $value) : $value;
         };
     @endphp
@@ -50,6 +53,10 @@
                     <div class="ticket-diff-header" aria-hidden="true"><span>Kolom</span><span>Sebelum</span><span>Yang diajukan</span></div>
                     <dl class="ticket-diff-list">
                         @foreach($ticket->changed_fields as $field => $values)
+                            @if($field === 'sale_data')
+                                <div class="p-3 text-sm"><p class="font-semibold">Penjualan aset · {{ $values['new']['sold_on'] ?? '-' }}</p><p>Rp {{ number_format($values['new']['amount'] ?? 0, 2, ',', '.') }}</p><a href="{{ route('assets.sale-request-proof', $ticket->id) }}" target="_blank" rel="noopener" class="text-purple-700 underline">Lihat bukti penjualan</a></div>
+                                @continue
+                            @endif
                         <div class="ticket-diff-row"><dt>{{ $fieldLabels[$field] ?? ucfirst(str_replace('_', ' ', $field)) }}</dt><dd><span class="ticket-value-label">Sebelum</span>{{ $formatTicketValue($field, $values['old']) }}</dd><dd class="ticket-new-value"><span class="ticket-value-label">Yang diajukan</span>{{ $formatTicketValue($field, $values['new']) }}</dd></div>
                         @endforeach
                     </dl>

@@ -124,6 +124,7 @@ class ScannerController extends Controller
     {
         $validated = $request->validated();
         $asset = Asset::findOrFail($validated['asset_id']);
+        abort_if($asset->status === 'sold', 422, 'Aset sudah dijual dan tersimpan di arsip.');
 
         /** @var User $user */
         $user = Auth::user();

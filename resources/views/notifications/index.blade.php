@@ -13,7 +13,7 @@
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
                     <a href="{{ route('notifications.index', ['tab' => 'unread']) }}"
                        class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition
-                              {{ $tab === 'unread' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                              {{ $tab === 'unread' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                         Belum Dibaca
                         @if($unreadCount > 0)
                             <span class="ml-1 inline-flex items-center justify-center h-4 min-w-[1rem] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold">
@@ -23,12 +23,12 @@
                     </a>
                     <a href="{{ route('notifications.index', ['tab' => 'read']) }}"
                        class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition
-                              {{ $tab === 'read' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                              {{ $tab === 'read' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                         Sudah Dibaca
                     </a>
                     <a href="{{ route('notifications.index', ['tab' => 'all']) }}"
                        class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition
-                              {{ $tab === 'all' ? 'bg-indigo-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
+                              {{ $tab === 'all' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
                         Semua
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                         <form method="POST" action="{{ route('notifications.read-all') }}">
                             @csrf
                             <button type="submit"
-                                    class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold transition cursor-pointer flex items-center gap-1">
+                                    class="text-xs text-purple-600 hover:text-purple-800 font-semibold transition cursor-pointer flex items-center gap-1">
                                 ✓ Tandai semua dibaca
                             </button>
                         </form>
@@ -123,7 +123,7 @@
                                         @csrf
                                         <button type="submit"
                                                 title="Tandai sudah dibaca" aria-label="Tandai sudah dibaca"
-                                                class="text-indigo-500 hover:text-indigo-700 transition cursor-pointer">
+                                                class="text-purple-500 hover:text-purple-700 transition cursor-pointer">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                         </button>
                                     </form>

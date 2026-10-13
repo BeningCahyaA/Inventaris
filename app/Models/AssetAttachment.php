@@ -26,6 +26,12 @@ class AssetAttachment extends Model
         return $this->belongsTo(Asset::class);
     }
 
+    public function isImage(): bool
+    {
+        return str_starts_with($this->file_type ?? '', 'image/')
+            || in_array(strtolower(pathinfo($this->file_path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png'], true);
+    }
+
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');

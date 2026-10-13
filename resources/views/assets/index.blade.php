@@ -135,8 +135,8 @@
                         {{-- Funnel Filter Button & Dropdown --}}
                         <div class="relative">
                             <button type="button" @click.stop="showFilters = !showFilters"
-                                class="inline-flex items-center justify-center p-2.5 border rounded-lg transition shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0"
-                                :class="showFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-indigo-600'"
+                                class="inline-flex items-center justify-center p-2.5 border rounded-lg transition shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shrink-0"
+                                :class="showFilters ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-purple-600'"
                                 title="Filter Data" :aria-expanded="showFilters"><span class="mr-2 text-sm font-semibold">Filter</span>
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                             </button>
@@ -151,7 +151,7 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Aset</label>
                                         <select x-model="filters.status" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua Status</option>
                                             <option value="available">Tersedia</option>
                                             <option value="in_use">Sedang digunakan</option>
@@ -163,7 +163,7 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
                                         <select x-model="filters.category" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua Kategori</option>
                                             @foreach($categories as $cat)
                                             <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
@@ -177,10 +177,10 @@
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">Rentang Tanggal</label>
                                     <div class="flex items-center gap-2">
                                         <input type="date" x-model="filters.date_from" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Dari tanggal">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" title="Dari tanggal">
                                         <span class="text-gray-400 text-xs font-medium shrink-0">s/d</span>
                                         <input type="date" x-model="filters.date_to" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Sampai tanggal">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" title="Sampai tanggal">
                                     </div>
                                 </div>
 
@@ -189,7 +189,7 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Garansi</label>
                                         <select x-model="filters.warranty_state" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua Kondisi Garansi</option>
                                             <option value="expiring">Garansi ≤ 30 hari</option>
                                             <option value="expired">Garansi sudah habis</option>
@@ -199,7 +199,7 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Status Peminjaman</label>
                                         <select x-model="filters.loan_state" @change="performSearch()"
-                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                                             <option value="">Semua Status Pinjam</option>
                                             <option value="borrowed">Dipinjam</option>
                                             <option value="returned">Dikembalikan</option>
@@ -210,7 +210,7 @@
 
                                 <div class="pt-2 border-t border-gray-100 flex justify-between items-center">
                                     <button type="button" @click="resetFilters()" class="text-sm text-gray-500 font-semibold hover:text-red-600 transition-colors cursor-pointer">Reset</button>
-                                    <button type="button" @click="showFilters = false" class="text-sm text-indigo-600 font-semibold hover:text-indigo-800 cursor-pointer">Tutup</button>
+                                    <button type="button" @click="showFilters = false" class="text-sm text-purple-600 font-semibold hover:text-purple-800 cursor-pointer">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -221,13 +221,13 @@
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
                             <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()"
-                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition"
                                 placeholder="Cari aset berdasarkan ID, nama, atau kategori...">
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-                        <a href="{{ route('assets.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-600 rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition shadow-sm shrink-0">
+                        <a href="{{ route('assets.create') }}" class="inline-flex items-center px-4 py-2.5 bg-purple-600 rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 transition shadow-sm shrink-0">
                             <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             <span class="whitespace-nowrap">Tambah Aset</span>
                         </a>
@@ -261,7 +261,7 @@
                     <template x-for="id in selectedIds" :key="id">
                         <input type="hidden" name="asset_ids[]" :value="id">
                     </template>
-                    <select name="status" class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 cursor-pointer">
+                    <select name="status" class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-400 cursor-pointer">
                         <option value="">— Ubah Status —</option>
                         <option value="available">Tersedia</option>
                         <option value="in_use">Sedang digunakan</option>
@@ -269,9 +269,9 @@
                         <option value="broken">Rusak</option>
                     </select>
                     <input type="text" name="location" placeholder="Ubah Lokasi"
-                           class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 placeholder-gray-400 w-28">
+                           class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-400 placeholder-gray-400 w-28">
                     <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-indigo-500/20">
+                    class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-purple-500/20">
                         Update
                     </button>
                 </form>
@@ -303,7 +303,7 @@
                 <div x-show="showEditScanner" x-transition class="relative bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-gray-100">
                     <div class="bg-gray-50 px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"></path></svg>
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"></path></svg>
                             Verifikasi Barcode
                         </h3>
                         <button @click="closeEditScanner()" class="text-gray-400 hover:text-red-600 transition-colors cursor-pointer">

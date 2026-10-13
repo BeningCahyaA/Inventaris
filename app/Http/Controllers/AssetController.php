@@ -28,7 +28,7 @@ class AssetController extends Controller
 {
     public function index(Request $request): View|string
     {
-        $query = Asset::query()->with('activeTransaction');
+        $query = Asset::active()->with('activeTransaction');
 
         $this->applyAssetFilters($request, $query);
 
@@ -48,6 +48,18 @@ class AssetController extends Controller
         $categories = Category::orderBy('name')->get();
 
         return view('assets.create', compact('categories'));
+    }
+
+    public function archive(Request $request): View
+    {
+        $query = Asset::where('status', 'sold')->with('sale');
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(fn ($q) => $q->where('name', 'like', '%'.$search.'%')->orWhere('asset_tag', 'like', '%'.$search.'%'));
+        }
+        $assets = $query->latest()->paginate(12)->withQueryString();
+
+        return view('assets.archive', compact('assets'));
     }
 
     public function store(StoreAssetRequest $request): RedirectResponse
@@ -74,6 +86,7 @@ class AssetController extends Controller
                 'warranty_expiry_date' => $validated['warranty_expiry_date'] ?? null,
                 'condition' => $validated['condition'],
                 'price' => $validated['price'] ?? 0,
+                'depreciation_rate' => $validated['depreciation_rate'] ?? 0,
                 'person_in_charge' => $validated['person_in_charge'] ?? null,
                 'location' => $validated['location'] ?? null,
                 'vendor' => $validated['vendor'] ?? null,
@@ -82,6 +95,11 @@ class AssetController extends Controller
             ]);
 
             $this->storeAttachments($request, $asset, Auth::id());
+            if ($asset->status === 'sold') {
+                app(\App\Services\AssetSaleService::class)->record($asset, app(\App\Services\AssetSaleService::class)->prepare($request));
+            } else {
+                app(\App\Services\AssetDepreciationService::class)->sync($asset);
+            }
 
             /** @var \App\Models\User $user */
             $user = Auth::user();
@@ -101,7 +119,7 @@ class AssetController extends Controller
             return $newTag;
         });
 
-        return redirect()->route('assets.index')->with('success', 'Aset Baru Berhasil Ditambah: ' . $newTag);
+        return redirect()->route($validated['status'] === 'sold' ? 'assets.archive' : 'assets.index')->with('success', 'Aset Baru Berhasil Ditambah: ' . $newTag);
     }
 
     public function show(int $id): View
@@ -112,12 +130,17 @@ class AssetController extends Controller
             'logs' => fn ($q) => $q->with('user')->latest()->take(10)
         ])->findOrFail($id);
 
-        return view('assets.show', compact('asset'));
+        app(\App\Services\AssetDepreciationService::class)->sync($asset);
+        $asset->load(['sale', 'depreciations' => fn ($q) => $q->orderByDesc('year_number')]);
+        $depreciatedValue = max(0, round((float) $asset->price - (float) $asset->depreciations->sum('amount'), 2));
+
+        return view('assets.show', compact('asset', 'depreciatedValue'));
     }
 
     public function edit(int $id): View
     {
         $asset = Asset::with(['attachments', 'activeTransaction'])->findOrFail($id);
+        abort_if($asset->status === 'sold', 422, 'Aset dijual tersimpan di arsip dan tidak dapat diubah.');
         $categories = Category::orderBy('name')->get();
 
         return view('assets.edit', compact('asset', 'categories'));
@@ -127,6 +150,10 @@ class AssetController extends Controller
     {
         $validated = $request->validated();
         $asset = Asset::findOrFail($id);
+
+        abort_if($asset->status === 'sold', 422, 'Aset dijual tersimpan di arsip dan tidak dapat diubah.');
+        app(\App\Services\AssetDepreciationService::class)->sync($asset, $validated['status'] === 'sold' ? Carbon::parse($validated['sale_date']) : null);
+        $validated['depreciation_rate'] = $validated['depreciation_rate'] ?? $asset->depreciation_rate ?? 0;
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -140,6 +167,7 @@ class AssetController extends Controller
             'warranty_expiry_date' => $validated['warranty_expiry_date'] ?? null,
             'condition' => $validated['condition'],
             'price' => $validated['price'] ?? 0,
+            'depreciation_rate' => $validated['depreciation_rate'],
             'person_in_charge' => $validated['person_in_charge'] ?? null,
             'location' => $validated['location'] ?? null,
             'vendor' => $validated['vendor'] ?? null,
@@ -158,6 +186,9 @@ class AssetController extends Controller
                 $oldData = $asset->toArray();
                 $oldStatus = $asset->status;
                 $asset->update($validated);
+                if ($asset->status === 'sold') {
+                    app(\App\Services\AssetSaleService::class)->record($asset, app(\App\Services\AssetSaleService::class)->prepare($request));
+                }
             Log::info("Super Admin (ID: {$user->id}) updated asset: {$asset->asset_tag}");
 
                 // Handle transaksi peminjaman/pengembalian
@@ -177,17 +208,17 @@ class AssetController extends Controller
                 $this->storeAttachments($request, $asset, $user->id);
 
                 if ($request->filled('delete_attachments')) {
-                    $attachmentsToDelete = AssetAttachment::whereIn('id', $request->delete_attachments)->get();
+                    $attachmentsToDelete = $asset->attachments()->whereIn('id', $request->delete_attachments)->get();
                     foreach ($attachmentsToDelete as $attachment) {
                         if (Storage::disk('public')->exists($attachment->file_path)) {
-                            Storage::disk('public')->delete($attachment->file_path);
+                            abort_unless(Storage::disk('public')->delete($attachment->file_path), 500, 'File lampiran gagal dihapus.');
                         }
                         $attachment->delete();
                     }
                 }
             });
 
-            return redirect()->route('assets.index')->with('success', 'Data Aset Berhasil Diperbarui!');
+            return redirect()->route($asset->status === 'sold' ? 'assets.archive' : 'assets.index')->with('success', 'Data Aset Berhasil Diperbarui!');
         }
 
         // Admin: Cek apakah sudah ada tiket pending untuk aset ini
@@ -200,6 +231,9 @@ class AssetController extends Controller
         }
 
         // Admin: Upload lampiran langsung (additive), tapi delete menunggu approval
+        if ($validated['status'] === 'sold') {
+            $newData['sale_data'] = app(\App\Services\AssetSaleService::class)->prepare($request);
+        }
         $this->storeAttachments($request, $asset, $user->id);
 
         if ($request->filled('delete_attachments')) {
@@ -275,6 +309,7 @@ class AssetController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $asset = Asset::findOrFail($id);
+        abort_if($asset->status === 'sold', 422, 'Riwayat aset dijual disimpan di arsip.');
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -352,6 +387,7 @@ class AssetController extends Controller
 
         DB::transaction(function () use ($assetIds, $changes, $user): void {
             $assets = Asset::whereIn('id', $assetIds)->lockForUpdate()->get();
+            abort_if($assets->contains(fn ($asset) => $asset->status === 'sold'), 422, 'Aset dijual tidak dapat diubah melalui tindakan massal.');
 
             foreach ($assets as $asset) {
                 if ($user->role === 'super_admin') {
@@ -425,6 +461,7 @@ class AssetController extends Controller
 
         DB::transaction(function () use ($assetIds, $user): void {
             $assets = Asset::whereIn('id', $assetIds)->lockForUpdate()->get();
+            abort_if($assets->contains(fn ($asset) => $asset->status === 'sold'), 422, 'Riwayat aset dijual disimpan di arsip.');
 
             foreach ($assets as $asset) {
                 if ($user->role === 'super_admin') {
@@ -492,6 +529,7 @@ class AssetController extends Controller
 
     private function applyAssetFilters(Request $request, $query): void
     {
+        $query->where('status', '!=', 'sold');
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -559,12 +597,13 @@ class AssetController extends Controller
             }
 
             $path = $file->store('asset-attachments', 'public');
+            abort_unless($path !== false, 500, 'Lampiran gagal disimpan.');
 
             AssetAttachment::create([
                 'asset_id' => $asset->id,
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
-                'file_type' => $file->getClientMimeType(),
+                'file_type' => $file->getMimeType(),
                 'file_size' => $file->getSize(),
                 'uploaded_by' => $uploadedBy,
             ]);

@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 // Jalankan pengecekan overdue setiap hari jam 07:00 WIB
 Schedule::command('assets:mark-overdue')->dailyAt('07:00');
+Schedule::command('assets:depreciate')->dailyAt('00:10')->timezone('Asia/Jakarta')->withoutOverlapping();

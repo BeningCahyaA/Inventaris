@@ -238,19 +238,28 @@ class ApprovalController extends Controller
             if ($log->action === 'update') {
                 $newData = $log->new_data ?? [];
                 $oldStatus = $asset->status;
+                abort_if($asset->status === 'sold', 422, 'Aset sudah dijual dan tersimpan di arsip.');
+                app(\App\Services\AssetDepreciationService::class)->sync($asset,
+                    ($newData['status'] ?? null) === 'sold' && !empty($newData['sale_data']['sold_on'])
+                        ? Carbon::parse($newData['sale_data']['sold_on']) : null);
 
                 // Filter field yang bukan kolom tabel assets
-                $nonAssetFields = ['borrower_name', 'due_at', 'borrow_notes', 'notes', 'id', 'created_at', 'updated_at', 'delete_attachments'];
+                $nonAssetFields = ['borrower_name', 'due_at', 'borrow_notes', 'notes', 'id', 'created_at', 'updated_at', 'delete_attachments', 'sale_data'];
                 $assetData = array_diff_key($newData, array_flip($nonAssetFields));
 
+                if (($assetData['status'] ?? null) === 'sold') {
+                    app(\App\Services\AssetSaleService::class)->record($asset, $newData['sale_data'] ?? []);
+                }
                 $asset->update($assetData);
 
                 // Check for attachments marked for deletion
                 if (!empty($newData['delete_attachments'])) {
-                    $attachmentsToDelete = \App\Models\AssetAttachment::whereIn('id', $newData['delete_attachments'])->get();
+                    $attachmentsToDelete = $asset->attachments()->whereIn('id', $newData['delete_attachments'])->get();
                     foreach ($attachmentsToDelete as $attachment) {
                         if (\Illuminate\Support\Facades\Storage::disk('public')->exists($attachment->file_path)) {
-                            \Illuminate\Support\Facades\Storage::disk('public')->delete($attachment->file_path);
+                            if (! \Illuminate\Support\Facades\Storage::disk('public')->delete($attachment->file_path)) {
+                                throw new \RuntimeException('File lampiran gagal dihapus.');
+                            }
                         }
                         $attachment->delete();
                     }

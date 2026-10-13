@@ -22,7 +22,7 @@
             <tbody class="bg-white divide-y divide-gray-50">
                 @if($assets->count() > 0)
                     @foreach($assets as $asset)
-                    <tr class="hover:bg-blue-50/40 transition-colors duration-200 group">
+                    <tr class="hover:bg-purple-50/40 transition-colors duration-200 group">
                         
                         <td class="px-4 py-4 text-sm text-gray-400 font-medium text-center">
                             {{ ($assets->currentPage() - 1) * $assets->perPage() + $loop->iteration }}
