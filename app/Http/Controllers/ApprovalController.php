@@ -244,7 +244,7 @@ class ApprovalController extends Controller
                         ? Carbon::parse($newData['sale_data']['sold_on']) : null);
 
                 // Filter field yang bukan kolom tabel assets
-                $nonAssetFields = ['borrower_name', 'due_at', 'borrow_notes', 'notes', 'id', 'created_at', 'updated_at', 'delete_attachments', 'sale_data'];
+                $nonAssetFields = ['depreciation_rate', 'borrower_name', 'due_at', 'borrow_notes', 'notes', 'id', 'created_at', 'updated_at', 'delete_attachments', 'sale_data'];
                 $assetData = array_diff_key($newData, array_flip($nonAssetFields));
 
                 if (($assetData['status'] ?? null) === 'sold') {
@@ -270,7 +270,7 @@ class ApprovalController extends Controller
                 /** @var \App\Models\User $approver */
                 $approver = Auth::user();
 
-                if ($newStatus === 'in_use' && $oldStatus !== 'in_use') {
+                if (in_array($newStatus, ['in_use', 'borrowed'], true) && ! $asset->activeTransaction()->exists()) {
                     AssetTransaction::create([
                         'asset_id' => $asset->id,
                         'borrower_user_id' => $log->user_id,
@@ -283,7 +283,7 @@ class ApprovalController extends Controller
                     ]);
                 }
 
-                if ($oldStatus === 'in_use' && $newStatus !== 'in_use') {
+                if (in_array($oldStatus, ['in_use', 'borrowed'], true) && ! in_array($newStatus, ['in_use', 'borrowed'], true)) {
                     $activeTransaction = $asset->transactions()
                         ->whereNull('returned_at')
                         ->latest('borrowed_at')

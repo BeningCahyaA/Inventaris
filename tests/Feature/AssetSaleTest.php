@@ -26,7 +26,7 @@ class AssetSaleTest extends TestCase
         Storage::fake('local');
         Storage::fake('public');
         Carbon::setTestNow('2026-10-13 10:00:00');
-        Category::create(['name' => 'Mobile', 'slug' => 'mobile', 'prefix' => 'M']);
+        Category::create(['name' => 'Mobile', 'slug' => 'mobile', 'prefix' => 'M', 'depreciation_rate' => 10]);
     }
 
     protected function tearDown(): void

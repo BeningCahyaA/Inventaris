@@ -42,6 +42,12 @@
                     @error('prefix')<p class="category-field-error">{{ $message }}</p>@enderror
                 </div>
             </div>
+            <div class="category-form-field">
+                <label for="depreciation_rate">Penyusutan per tahun (%)</label>
+                <input type="number" name="depreciation_rate" id="depreciation_rate" min="0" max="100" step="0.01" required value="{{ old('depreciation_rate', $category->depreciation_rate ?? 0) }}" aria-describedby="depreciation-help">
+                <p id="depreciation-help">Berlaku untuk semua aset dalam kategori ini. Dihitung dari harga awal yang dimasukkan pada aset setiap tahun sejak tanggal pembelian. Contoh: Rp10.000.000 × 10% = Rp1.000.000 per tahun, hingga nilai Rp0. Isi 0 untuk tanpa penyusutan. Perubahan berlaku pada tahun yang belum tercatat; riwayat tetap tersimpan.</p>
+                @error('depreciation_rate')<p class="category-field-error">{{ $message }}</p>@enderror
+            </div>
             <div class="category-tag-preview"><span>Contoh tag untuk aset baru</span><strong><span id="category-tag-prefix">{{ old('prefix', $category->prefix ?? '') ?: 'PK' }}</span>-{{ $categoryYear }}-001</strong><p>Nomor urut dibuat otomatis saat menambah aset.</p></div>
             <div class="asset-form-actions">
                 <button type="submit" class="category-action">{{ $editing ? (auth()->user()->role === 'super_admin' ? 'Simpan perubahan' : 'Kirim permintaan perubahan') : 'Simpan kategori' }}</button>

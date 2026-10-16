@@ -18,6 +18,7 @@ class UpdateCategoryRequest extends FormRequest
         $id = $this->route('category');
 
         return [
+            'depreciation_rate' => 'sometimes|required|numeric|min:0|max:100',
             'name' => "required|string|max:100|unique:categories,name,{$id}",
             'slug' => "required|string|max:50|unique:categories,slug,{$id}|alpha_dash",
             'prefix' => "required|string|max:5|unique:categories,prefix,{$id}",

@@ -17,7 +17,10 @@ class Category extends Model
         'name',
         'slug',
         'prefix',
+        'depreciation_rate',
     ];
+
+    protected $casts = ['depreciation_rate' => 'decimal:2'];
 
     public function assets(): HasMany
     {

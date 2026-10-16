@@ -6,7 +6,7 @@
         </h2>
     </x-slot>
 
-    <div class="asset-page" x-data="{
+    <div class="asset-page" :class="{ 'asset-has-selection': selectedIds.length > 0 }" x-data="{
         showAssetModal: false,
         showEditScanner: false,
         showFilters: {{ (request('status') || request('category') || request('date_from') || request('date_to') || request('warranty_state') || request('loan_state')) ? 'true' : 'false' }},
@@ -155,6 +155,7 @@
                                             <option value="">Semua Status</option>
                                             <option value="available">Tersedia</option>
                                             <option value="in_use">Sedang digunakan</option>
+                                            <option value="borrowed">Dipinjam</option>
                                             <option value="maintenance">Dalam perawatan</option>
                                             <option value="broken">Rusak</option>
                                         </select>
@@ -249,51 +250,44 @@
                 @include('assets.partials.table')
             </div>
 
-            {{-- Bulk Action Bar (floating) --}}
-            <div x-show="selectedIds.length > 0" x-transition x-cloak
-                class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900/90 backdrop-blur-md text-white rounded-2xl shadow-2xl px-6 py-3 flex items-center gap-5 border border-white/10 min-w-[320px] md:min-w-[450px]">
-                <span class="text-sm font-semibold" x-text="selectedIds.length + ' aset dipilih'"></span>
-                <div class="h-5 w-px bg-gray-600"></div>
-
-                {{-- Bulk Update Form --}}
-                <form method="POST" action="{{ route('assets.bulk-update') }}" class="flex items-center gap-2">
-                    @csrf
-                    <template x-for="id in selectedIds" :key="id">
-                        <input type="hidden" name="asset_ids[]" :value="id">
-                    </template>
-                    <select name="status" class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-400 cursor-pointer">
-                        <option value="">— Ubah Status —</option>
-                        <option value="available">Tersedia</option>
-                        <option value="in_use">Sedang digunakan</option>
-                        <option value="maintenance">Dalam perawatan</option>
-                        <option value="broken">Rusak</option>
-                    </select>
-                    <input type="text" name="location" placeholder="Ubah Lokasi"
-                           class="text-xs bg-gray-800 border border-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-400 placeholder-gray-400 w-28">
-                    <button type="submit"
-                    class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-purple-500/20">
-                        Update
-                    </button>
-                </form>
-
-                <div class="h-5 w-px bg-gray-600"></div>
-
-                {{-- Bulk Delete Form --}}
-                <form method="POST" action="{{ route('assets.bulk-delete-request') }}" class="inline" @submit.prevent="confirmBulkDelete($event)">
-                    @csrf
-                    <template x-for="id in selectedIds" :key="id">
-                        <input type="hidden" name="asset_ids[]" :value="id">
-                    </template>
-                    <button type="submit"
-                            class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-red-500/20">
-                        Hapus
-                    </button>
-                </form>
-
-                <button @click="clearSelection()" class="ml-auto text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest cursor-pointer">
-                    Batal
-                </button>
-            </div>
+            <section x-show="selectedIds.length > 0" x-transition x-cloak class="asset-bulk-panel" x-data="{ bulkStatus: '' }" aria-label="Tindakan untuk aset terpilih">
+                <div class="asset-bulk-heading">
+                    <strong x-text="selectedIds.length + ' aset dipilih'" aria-live="polite"></strong>
+                    <button type="button" @click="clearSelection()" class="asset-bulk-cancel">Batalkan pilihan</button>
+                </div>
+                <div class="asset-bulk-content">
+                    <form method="POST" action="{{ route('assets.bulk-update') }}" class="asset-bulk-update">
+                        @csrf
+                        <template x-for="id in selectedIds" :key="id"><input type="hidden" name="asset_ids[]" :value="id"></template>
+                        <div class="asset-bulk-field">
+                            <label for="bulk-status">Ubah status</label>
+                            <select name="status" id="bulk-status" x-model="bulkStatus">
+                                <option value="">Tetap seperti semula</option>
+                                <option value="available">Tersedia</option>
+                                <option value="in_use">Sedang digunakan</option>
+                                <option value="borrowed">Dipinjam</option>
+                                <option value="maintenance">Dalam perawatan</option>
+                                <option value="broken">Rusak</option>
+                            </select>
+                        </div>
+                        <div class="asset-bulk-field">
+                            <label for="bulk-location">Ubah lokasi</label>
+                            <input type="text" name="location" id="bulk-location" maxlength="255" placeholder="Tetap seperti semula">
+                        </div>
+                        <div class="asset-bulk-loan" x-show="['borrowed', 'in_use'].includes(bulkStatus)" x-cloak>
+                            <div class="asset-bulk-field"><label for="bulk-borrower">Nama peminjam</label><input type="text" id="bulk-borrower" name="borrower_name" maxlength="255" :required="['borrowed', 'in_use'].includes(bulkStatus)" :disabled="!['borrowed', 'in_use'].includes(bulkStatus)" placeholder="Nama peminjam untuk aset terpilih"></div>
+                            <div class="asset-bulk-field"><label for="bulk-due">Jatuh tempo (opsional)</label><input type="date" id="bulk-due" name="due_at" :disabled="!['borrowed', 'in_use'].includes(bulkStatus)"></div>
+                            <p>Data peminjam berlaku untuk semua aset yang dipilih. Peminjaman tercatat di riwayat setelah perubahan disetujui.</p>
+                        </div>
+                        <button type="submit" class="asset-bulk-save">Simpan perubahan</button>
+                    </form>
+                    <form method="POST" action="{{ route('assets.bulk-delete-request') }}" class="asset-bulk-delete" @submit.prevent="confirmBulkDelete($event)">
+                        @csrf
+                        <template x-for="id in selectedIds" :key="id"><input type="hidden" name="asset_ids[]" :value="id"></template>
+                        <button type="submit">Hapus aset</button>
+                    </form>
+                </div>
+            </section>
         </div>
 
         {{-- Edit Scanner Modal (Barcode) --}}

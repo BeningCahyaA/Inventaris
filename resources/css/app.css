@@ -236,7 +236,7 @@
 .asset-category { display: block; font-size: 12px; color: #475569; margin-bottom: 8px; overflow-wrap: anywhere; }
 .asset-status { display: inline-block; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: #f1f5f9; color: #475569; }
 .asset-status-available { background: #ecfdf5; color: #047857; }
-.asset-status-in_use { background: #eff6ff; color: #1d4ed8; }
+.asset-status-in_use, .asset-status-borrowed { background: #eff6ff; color: #1d4ed8; }
 .asset-status-maintenance { background: #fffbeb; color: #92400e; }
 .asset-status-broken { background: #fef2f2; color: #b91c1c; }
 .asset-subpage { padding: 0; }
@@ -368,3 +368,32 @@
     .status-chart-layout { grid-template-columns: 220px minmax(0, 1fr); }
     .trend-chart-area { height: 280px; }
 }
+
+.asset-has-selection { padding-bottom: 320px; }
+.asset-bulk-panel { position: fixed; bottom: 24px; left: 24px; right: 24px; z-index: 40; max-width: 1040px; margin-inline: auto; padding: 18px 20px; border: 1px solid #ddd6fe; border-radius: 16px; background: #fff; box-shadow: 0 12px 40px #0f172a26; max-height: calc(100dvh - 120px); overflow-y: auto; }
+.asset-bulk-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; color: #0f172a; font-size: 14px; }
+.asset-bulk-cancel { color: #64748b; font-size: 13px; padding: 8px 0; }
+.asset-bulk-content { display: flex; align-items: flex-end; gap: 14px; }
+.asset-bulk-update { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr) auto; align-items: end; gap: 12px; flex: 1; min-width: 0; }
+.asset-bulk-field { min-width: 0; }
+.asset-bulk-field label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+.asset-bulk-field input, .asset-bulk-field select { width: 100%; min-height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; color: #0f172a; font-size: 13px; }
+.asset-bulk-field input::placeholder { color: #64748b; }
+.asset-bulk-loan { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.asset-bulk-loan p { grid-column: 1 / -1; font-size: 12px; color: #64748b; }
+.asset-bulk-save { grid-column: 3; grid-row: 1; background: #9333ea; color: white; }
+.asset-bulk-save, .asset-bulk-delete button { min-height: 42px; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.asset-bulk-save:hover { background: #7e22ce; }
+.asset-bulk-delete button { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; }
+.asset-bulk-delete button:hover { background: #fee2e2; }
+.asset-bulk-panel :focus-visible { outline: 2px solid #a855f7; outline-offset: 2px; }
+@media (min-width: 1024px) { .asset-bulk-panel { left: 280px; } }
+@media (max-width: 767px) {
+    .asset-bulk-panel { left: 12px; right: 12px; bottom: 12px; padding: 14px; }
+    .asset-bulk-content { flex-wrap: wrap; }
+    .asset-bulk-update { grid-template-columns: 1fr 1fr; flex-basis: 100%; }
+    .asset-bulk-save { grid-column: 1 / -1; grid-row: auto; }
+    .asset-bulk-delete, .asset-bulk-delete button { width: 100%; }
+    .asset-has-selection { padding-bottom: 480px; }
+}
+@media (max-width: 479px) { .asset-bulk-loan { grid-template-columns: 1fr; } }

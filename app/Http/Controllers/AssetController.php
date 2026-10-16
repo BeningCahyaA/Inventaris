@@ -86,7 +86,6 @@ class AssetController extends Controller
                 'warranty_expiry_date' => $validated['warranty_expiry_date'] ?? null,
                 'condition' => $validated['condition'],
                 'price' => $validated['price'] ?? 0,
-                'depreciation_rate' => $validated['depreciation_rate'] ?? 0,
                 'person_in_charge' => $validated['person_in_charge'] ?? null,
                 'location' => $validated['location'] ?? null,
                 'vendor' => $validated['vendor'] ?? null,
@@ -153,7 +152,6 @@ class AssetController extends Controller
 
         abort_if($asset->status === 'sold', 422, 'Aset dijual tersimpan di arsip dan tidak dapat diubah.');
         app(\App\Services\AssetDepreciationService::class)->sync($asset, $validated['status'] === 'sold' ? Carbon::parse($validated['sale_date']) : null);
-        $validated['depreciation_rate'] = $validated['depreciation_rate'] ?? $asset->depreciation_rate ?? 0;
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -167,7 +165,6 @@ class AssetController extends Controller
             'warranty_expiry_date' => $validated['warranty_expiry_date'] ?? null,
             'condition' => $validated['condition'],
             'price' => $validated['price'] ?? 0,
-            'depreciation_rate' => $validated['depreciation_rate'],
             'person_in_charge' => $validated['person_in_charge'] ?? null,
             'location' => $validated['location'] ?? null,
             'vendor' => $validated['vendor'] ?? null,
@@ -272,7 +269,7 @@ class AssetController extends Controller
     private function handleTransaction(Asset $asset, string $oldStatus, string $newStatus, User $user, array $borrowerData): void
     {
         // Status berubah ke in_use → buat transaksi peminjaman baru
-        if ($newStatus === 'in_use' && $oldStatus !== 'in_use') {
+        if (in_array($newStatus, ['in_use', 'borrowed'], true) && ! $asset->activeTransaction()->exists()) {
             AssetTransaction::create([
                 'asset_id' => $asset->id,
                 'borrower_user_id' => $user->id,
@@ -286,7 +283,7 @@ class AssetController extends Controller
         }
 
         // Status berubah dari in_use ke status lain → tutup transaksi aktif
-        if ($oldStatus === 'in_use' && $newStatus !== 'in_use') {
+        if (in_array($oldStatus, ['in_use', 'borrowed'], true) && ! in_array($newStatus, ['in_use', 'borrowed'], true)) {
             $activeTransaction = $asset->transactions()
                 ->whereNull('returned_at')
                 ->latest('borrowed_at')
@@ -377,6 +374,7 @@ class AssetController extends Controller
     {
         $assetIds = $request->input('asset_ids');
         $changes  = $request->onlyFilled();
+        $borrowerData = array_merge(['borrower_name' => null, 'due_at' => null, 'borrow_notes' => null], $request->safe()->only(['borrower_name', 'due_at']));
 
         if (empty($changes)) {
             return back()->with('error', 'Tidak ada perubahan yang dipilih untuk bulk update.');
@@ -385,21 +383,25 @@ class AssetController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        DB::transaction(function () use ($assetIds, $changes, $user): void {
+        DB::transaction(function () use ($assetIds, $changes, $user, $borrowerData): void {
             $assets = Asset::whereIn('id', $assetIds)->lockForUpdate()->get();
             abort_if($assets->contains(fn ($asset) => $asset->status === 'sold'), 422, 'Aset dijual tidak dapat diubah melalui tindakan massal.');
 
             foreach ($assets as $asset) {
                 if ($user->role === 'super_admin') {
                     $oldData = $asset->toArray();
+                    $oldStatus = $asset->status;
                     $asset->update($changes);
+                    if (isset($changes['status'])) {
+                        $this->handleTransaction($asset, $oldStatus, $asset->status, $user, $borrowerData);
+                    }
 
                     AssetLog::create([
                         'asset_id'    => $asset->id,
                         'user_id'     => $user->id,
                         'action'      => 'update',
                         'old_data'    => $oldData,
-                        'new_data'    => $asset->fresh()->toArray(),
+                        'new_data'    => array_merge($asset->fresh()->toArray(), $borrowerData),
                         'status'      => 'approved',
                         'approved_by' => $user->id,
                         'approved_at' => now(),
@@ -412,7 +414,7 @@ class AssetController extends Controller
                         'user_id'  => $user->id,
                         'action'   => 'update',
                         'old_data' => $asset->toArray(),
-                        'new_data' => array_merge($asset->toArray(), $changes),
+                        'new_data' => array_merge($asset->toArray(), $changes, $borrowerData),
                         'status'   => 'pending',
                     ]);
 

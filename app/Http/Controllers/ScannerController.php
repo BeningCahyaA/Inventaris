@@ -55,7 +55,7 @@ class ScannerController extends Controller
         // Tentukan aksi yang valid berdasarkan status aset saat ini
         $validActions = match ($asset->status) {
             'available'   => ['check_out', 'maintenance'],
-            'in_use'      => ['check_in'],
+            'in_use', 'borrowed' => ['check_in'],
             'maintenance' => ['check_in'],
             default       => [],
         };

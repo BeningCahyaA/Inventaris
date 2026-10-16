@@ -345,7 +345,7 @@
     </div>
 
     @php
-        $statusLabels = ['available' => 'Tersedia', 'in_use' => 'Digunakan', 'maintenance' => 'Perawatan', 'broken' => 'Rusak'];
+        $statusLabels = ['available' => 'Tersedia', 'in_use' => 'Digunakan', 'borrowed' => 'Dipinjam', 'maintenance' => 'Perawatan', 'broken' => 'Rusak'];
         $condLabels = ['baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total'];
     @endphp
     <table class="overview"><tr>
@@ -440,7 +440,7 @@
                         @php
                             $statusClass = match($asset->status) {
                                 'available' => 'badge-available',
-                                'in_use' => 'badge-in-use',
+                                'in_use', 'borrowed' => 'badge-in-use',
                                 'maintenance' => 'badge-maintenance',
                                 'broken' => 'badge-broken',
                                 default => '',

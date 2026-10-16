@@ -18,7 +18,9 @@ class BulkAssetUpdateRequest extends FormRequest
         return [
             'asset_ids'        => ['required', 'array', 'min:1'],
             'asset_ids.*'      => ['integer', 'exists:assets,id'],
-            'status'           => ['nullable', 'string', 'in:available,in_use,maintenance,broken'],
+            'status'           => ['nullable', 'string', 'in:available,in_use,borrowed,maintenance,broken'],
+            'borrower_name' => ['exclude_unless:status,in_use,borrowed', 'required', 'string', 'max:255'],
+            'due_at' => ['exclude_unless:status,in_use,borrowed', 'nullable', 'date'],
             'category'         => ['nullable', 'string', 'exists:categories,slug'],
             'person_in_charge' => ['nullable', 'string', 'max:255'],
             'location'         => ['nullable', 'string', 'max:255'],

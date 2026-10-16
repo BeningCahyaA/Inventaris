@@ -1,14 +1,23 @@
 <x-app-layout>
-    <x-slot name="title">Riwayat Peminjaman Aset</x-slot>
+    <x-slot name="title">Riwayat Aset</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Riwayat Pinjam & Kembali') }}
+            {{ __('Riwayat Aset') }}
         </h2>
     </x-slot>
 
     <div class="asset-subpage management-page history-page" x-data="{ showFilters: false }">
         <div class="max-w-7xl mx-auto">
-            <div class="management-intro"><div><h3>Riwayat peminjaman</h3><p>Pantau peminjam, jatuh tempo, dan status pengembalian aset.</p></div></div>
+            <div class="management-intro"><div><h3>Riwayat aset</h3><p>Pantau riwayat peminjaman dan aktivitas pengelolaan aset.</p></div></div>
+            <nav class="flex gap-6 border-b border-gray-200 mb-6" aria-label="Jenis riwayat">
+                @foreach(['history' => 'Riwayat peminjaman', 'activity' => 'Log aktivitas'] as $tab => $label)
+                    <a href="{{ route('assets.history', ['tab' => $tab]) }}" @if($activeTab === $tab) aria-current="page" @endif
+                        class="inline-flex items-center py-3 border-b-2 text-sm font-semibold transition {{ $activeTab === $tab ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700' }}">{{ $label }}</a>
+                @endforeach
+            </nav>
+            @if($activeTab === 'activity')
+                @include('assets.partials.activity_table')
+            @else
             {{-- Modern Responsive Filter Bar --}}
             <div class="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
                 <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
@@ -81,9 +90,11 @@
             <div id="table-container" class="w-full flex flex-col gap-4">
                 @include('assets.partials.history_table')
             </div>
+            @endif
         </div>
     </div>
 
+    @if($activeTab === 'history')
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -151,4 +162,5 @@
         });
     </script>
     @endpush
+    @endif
 </x-app-layout>

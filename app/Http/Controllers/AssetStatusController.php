@@ -47,6 +47,32 @@ class AssetStatusController extends Controller
      */
     public function history(Request $request): View
     {
+        $activeTab = $request->query('tab') === 'activity' ? 'activity' : 'history';
+        if ($activeTab === 'activity') {
+            $assetLogs = \Illuminate\Support\Facades\DB::table('asset_logs')
+                ->leftJoin('assets', 'assets.id', '=', 'asset_logs.asset_id')
+                ->leftJoin('users', 'users.id', '=', 'asset_logs.user_id')
+                ->select('asset_logs.id', 'asset_logs.action', 'asset_logs.status', 'asset_logs.created_at', 'users.name as actor', 'assets.name as reference', 'assets.asset_tag as tag')
+                ->selectRaw("'Aset' as type");
+            $categoryLogs = \Illuminate\Support\Facades\DB::table('category_logs')
+                ->leftJoin('categories', 'categories.id', '=', 'category_logs.category_id')
+                ->leftJoin('users', 'users.id', '=', 'category_logs.user_id')
+                ->select('category_logs.id', 'category_logs.action', 'category_logs.status', 'category_logs.created_at', 'users.name as actor', 'categories.name as reference', 'categories.slug as tag')
+                ->selectRaw("'Kategori' as type");
+            $logs = \Illuminate\Support\Facades\DB::query()->fromSub($assetLogs->unionAll($categoryLogs), 'activity')
+                ->when($request->filled('search'), function ($query) use ($request) {
+                    $query->where(function ($query) use ($request) {
+                        foreach (['actor', 'reference', 'tag'] as $column) {
+                            $query->orWhere($column, 'like', '%'.$request->input('search').'%');
+                        }
+                    });
+                })
+                ->orderByDesc('created_at')->orderByDesc('id')->orderBy('type')
+                ->paginate(10)->withQueryString();
+
+            return view('assets.history', compact('activeTab', 'logs'));
+        }
+
         $transactions = AssetTransaction::with(['asset', 'borrower'])
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);
@@ -83,6 +109,6 @@ class AssetStatusController extends Controller
             return view('assets.partials.history_table', compact('transactions'));
         }
 
-        return view('assets.history', compact('transactions'));
+        return view('assets.history', compact('transactions', 'activeTab'));
     }
 }

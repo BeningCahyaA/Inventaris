@@ -14,7 +14,7 @@
         <tbody>
             @foreach($assets as $asset)
             @php
-                $statusLabel = match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', default => $asset->status };
+                $statusLabel = match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'borrowed' => 'Dipinjam', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', default => $asset->status };
                 $conditionLabel = match($asset->condition) { 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total', default => $asset->condition ?? 'Belum dicatat' };
             @endphp
             <tr>

@@ -83,6 +83,7 @@
                                     class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 cursor-pointer shadow-sm">
                                     <option value="available" {{ (old('status', $asset->status) == 'available') ? 'selected' : '' }}>Tersedia</option>
                                     <option value="in_use" {{ (old('status', $asset->status) == 'in_use') ? 'selected' : '' }}>Sedang digunakan</option>
+                                    <option value="borrowed" @selected(old('status', $asset->status) === 'borrowed')>Dipinjam</option>
                                     <option value="maintenance" {{ (old('status', $asset->status) == 'maintenance') ? 'selected' : '' }}>Dalam perawatan</option>
                                     <option value="broken" {{ (old('status', $asset->status) == 'broken') ? 'selected' : '' }}>Rusak</option>
                                     <option value="sold" {{ old('status', $asset->status) == 'sold' ? 'selected' : '' }}>Dijual (masuk arsip)</option>
@@ -112,7 +113,7 @@
                         </div>
 
                         {{-- Borrower / Peminjaman Fields (conditional) --}}
-                        <div x-show="status === 'in_use'" x-transition class="mb-5 bg-blue-50 border border-blue-200 rounded-xl p-5">
+                        <div x-show="['in_use', 'borrowed'].includes(status)" x-transition class="mb-5 bg-blue-50 border border-blue-200 rounded-xl p-5">
                             <h4 class="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                 Data Peminjam
@@ -131,7 +132,7 @@
                                     <label for="borrower_name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Peminjam*</label>
                                     <input type="text" name="borrower_name" id="borrower_name" value="{{ old('borrower_name', $asset->activeTransaction?->borrower_name) }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm"
-                                        placeholder="Nama peminjam">
+                                        placeholder="Nama peminjam" :required="['in_use', 'borrowed'].includes(status)">
                                     @error('borrower_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
@@ -157,7 +158,7 @@
                             @error('price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        @include('assets.partials.depreciation-form')
+
                         @include('assets.partials.sale-form')
 
                         <div class="mb-8">

@@ -30,7 +30,6 @@ class StoreAssetRequest extends FormRequest
             'purchase_date' => 'required|date',
             'condition' => 'required|in:baik,rusak,rusak_total',
             'price' => 'nullable|numeric|min:0',
-            'depreciation_rate' => 'nullable|numeric|min:0|max:100',
             'description' => 'required|string',
             'person_in_charge' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',

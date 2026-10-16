@@ -26,7 +26,6 @@ class Asset extends Model
         'status',
         'condition',
         'price',
-        'depreciation_rate',
         'description',
         'location',
         'vendor',
@@ -59,6 +58,16 @@ class Asset extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(AssetAttachment::class)->latest();
+    }
+
+    public function categoryDefinition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category', 'slug');
+    }
+
+    public function getDepreciationRateAttribute(): string
+    {
+        return (string) ($this->categoryDefinition?->depreciation_rate ?? '0.00');
     }
 
     public function depreciations(): HasMany

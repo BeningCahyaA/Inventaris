@@ -119,7 +119,7 @@
                             @php
                                 $statusColors = [
                                     'available' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
-                                    'in_use' => 'bg-blue-100 text-blue-800 border-blue-200',
+                                    'in_use', 'borrowed' => 'bg-blue-100 text-blue-800 border-blue-200',
                                     'maintenance' => 'bg-amber-100 text-amber-800 border-amber-200',
                                     'broken' => 'bg-red-100 text-red-800 border-red-200',
                                     'sold' => 'bg-gray-100 text-gray-700 border-gray-200',
@@ -132,7 +132,7 @@
                             @endphp
                             <div class="shrink-0 flex flex-wrap sm:flex-col items-start sm:items-end gap-2">
                                 <span class="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border {{ $statusColors[$asset->status] ?? 'bg-gray-100' }}">
-                                    {{ match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual · Arsip', default => $asset->status } }}
+                                    {{ match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'borrowed' => 'Dipinjam', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual · Arsip', default => $asset->status } }}
                                 </span>
                                 <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider {{ $condColors[$asset->condition] ?? 'bg-gray-100' }}">
                                     Kondisi: {{ str_replace('_', ' ', $asset->condition) }}
@@ -165,7 +165,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Penyusutan per tahun</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ number_format($asset->depreciation_rate, 2, ',', '.') }}% dari harga beli awal</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ number_format($asset->depreciation_rate, 2, ',', '.') }}% dari harga beli awal (mengikuti kategori)</p>
                             </div>
                             <div>
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Nilai setelah penyusutan</p>

@@ -3,13 +3,14 @@
     @if($categories->count())
     <table class="category-table">
         <caption class="sr-only">Daftar kategori aset dan aksi pengelolaan</caption>
-        <thead><tr><th scope="col" class="category-number-cell">No</th><th scope="col">Kategori</th><th scope="col">Kode tag</th><th scope="col">Jumlah aset</th><th scope="col" class="category-actions-heading">Aksi</th></tr></thead>
+        <thead><tr><th scope="col" class="category-number-cell">No</th><th scope="col">Kategori</th><th scope="col">Kode tag</th><th scope="col">Penyusutan / tahun</th><th scope="col">Jumlah aset</th><th scope="col" class="category-actions-heading">Aksi</th></tr></thead>
         <tbody>
             @foreach($categories as $category)
             <tr>
                 <td class="category-number-cell" data-label="No">{{ $categories->firstItem() + $loop->index }}</td>
                 <td class="category-name-cell"><span class="category-name">{{ $category->name }}</span><span class="category-slug">Kode kategori: {{ $category->slug }}</span></td>
                 <td data-label="Kode tag"><span class="category-prefix-original">{{ $category->prefix }}</span></td>
+                <td data-label="Penyusutan / tahun">{{ number_format($category->depreciation_rate, 2, ',', '.') }}%</td>
                 <td data-label="Jumlah aset"><a href="{{ route('assets.index', ['category' => $category->slug]) }}" class="category-asset-link" aria-label="Lihat aset kategori {{ $category->name }}">{{ $category->assets_count }} aset →</a></td>
                 <td class="category-actions-cell">
                     <div class="category-actions">

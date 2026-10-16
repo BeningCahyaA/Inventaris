@@ -120,7 +120,7 @@
                             @error('price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        @include('assets.partials.depreciation-form')
+
                         @include('assets.partials.sale-form')
 
                         <div class="mb-8">

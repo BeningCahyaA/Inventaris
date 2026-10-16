@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Asset;
-use App\Models\AssetLog;
+use App\Models\CategoryLog;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\AssetDepreciationService;
@@ -32,8 +32,12 @@ class AssetDepreciationTest extends TestCase
 
     private function asset(array $values = []): Asset
     {
+        $rate = $values['depreciation_rate'] ?? 10;
+        unset($values['depreciation_rate']);
+        $category = Category::create(['name' => uniqid('Category'), 'slug' => uniqid('category'), 'prefix' => uniqid(), 'depreciation_rate' => $rate]);
         return Asset::factory()->create(array_merge([
-            'price' => 10000000, 'depreciation_rate' => 10,
+            'category' => $category->slug,
+            'price' => 10000000,
             'purchase_date' => '2023-10-13', 'status' => 'available',
         ], $values));
     }
@@ -68,7 +72,7 @@ class AssetDepreciationTest extends TestCase
         $asset = $this->asset(['purchase_date' => '2025-10-13']);
         $service = app(AssetDepreciationService::class);
         $service->sync($asset);
-        $asset->update(['depreciation_rate' => 20]);
+        $asset->categoryDefinition->update(['depreciation_rate' => 20]);
         $service->sync($asset, Carbon::parse('2027-10-13'));
         $rows = $asset->depreciations()->orderBy('year_number')->get();
         $this->assertSame('10.00', $rows[0]->rate);
@@ -111,23 +115,23 @@ class AssetDepreciationTest extends TestCase
 
     public function test_admin_rate_change_requires_approval_and_detail_shows_history(): void
     {
-        $category = Category::create(['name' => 'Mobile', 'slug' => 'mobile', 'prefix' => 'M']);
-        $asset = $this->asset(['category' => $category->slug]);
+        $asset = $this->asset();
+        $category = $asset->categoryDefinition;
         $admin = User::factory()->create(['role' => 'admin']);
         $superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $payload = array_merge($asset->only(['name', 'category', 'status', 'condition', 'price', 'description']), [
-            'purchase_date' => '2023-10-13', 'depreciation_rate' => 20,
-        ]);
-        $this->actingAs($admin)->put(route('assets.update', $asset->id), $payload)
+        $category->update(['prefix' => 'M']);
+        $payload = ['name' => $category->name, 'slug' => $category->slug, 'prefix' => 'M', 'depreciation_rate' => 20];
+        $this->actingAs($admin)->put(route('categories.update', $category->id), $payload)
             ->assertRedirect()->assertSessionHasNoErrors();
         $this->assertSame('10.00', $asset->fresh()->depreciation_rate);
-        $log = AssetLog::where('asset_id', $asset->id)->where('status', 'pending')->firstOrFail();
-        $this->actingAs($superAdmin)->post(route('approvals.approve', ['type' => 'asset', 'id' => $log->id]))
+        $this->get(route('assets.show', $asset->id))->assertOk()->assertSee('7.000.000,00');
+        $log = CategoryLog::where('category_id', $category->id)->where('status', 'pending')->firstOrFail();
+        $this->actingAs($superAdmin)->post(route('approvals.approve', ['type' => 'category', 'id' => $log->id]))
             ->assertRedirect()->assertSessionHas('success');
         $this->assertSame('20.00', $asset->fresh()->depreciation_rate);
-        $this->get(route('assets.show', $asset->id))->assertOk()
-            ->assertSee('Riwayat penyusutan')->assertSee('7.000.000,00');
+        $this->get(route('assets.show', $asset->id))->assertOk()->assertSee('Riwayat penyusutan')->assertSee('7.000.000,00');
         $payload['depreciation_rate'] = 101;
-        $this->put(route('assets.update', $asset->id), $payload)->assertSessionHasErrors('depreciation_rate');
+        $this->put(route('categories.update', $category->id), $payload)->assertSessionHasErrors('depreciation_rate');
+        $this->get(route('assets.edit', $asset->id))->assertOk()->assertDontSee('name="depreciation_rate"', false);
     }
 }

@@ -85,7 +85,7 @@
                         <span class="self-start shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold"
                             :class="{
                                   'bg-green-100 text-green-700': assetData?.status === 'available',
-                                  'bg-blue-100 text-blue-700': assetData?.status === 'in_use',
+                                  'bg-blue-100 text-blue-700': ['in_use', 'borrowed'].includes(assetData?.status),
                                   'bg-amber-100 text-amber-700': assetData?.status === 'maintenance',
                                   'bg-red-100 text-red-700': assetData?.status === 'broken',
                               }"
@@ -643,6 +643,7 @@
                     const map = {
                         available: 'Available',
                         in_use: 'In Use',
+                        borrowed: 'Dipinjam',
                         maintenance: 'Maintenance',
                         broken: 'Broken',
                         sold: 'Dijual · Arsip'

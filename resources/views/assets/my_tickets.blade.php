@@ -6,7 +6,7 @@
         $fieldLabels = ['name' => 'Nama', 'category' => 'Kategori', 'status' => 'Status aset', 'condition' => 'Kondisi fisik', 'description' => 'Deskripsi', 'purchase_date' => 'Tanggal pembelian', 'warranty_expiry_date' => 'Akhir masa garansi', 'price' => 'Harga pembelian', 'person_in_charge' => 'Penanggung jawab', 'location' => 'Lokasi', 'vendor' => 'Vendor', 'serial_number' => 'Nomor seri', 'borrower_name' => 'Peminjam', 'due_at' => 'Jatuh tempo', 'borrow_notes' => 'Catatan peminjaman', 'notes' => 'Catatan', 'slug' => 'Kode kategori', 'prefix' => 'Awalan kode tag', 'delete_attachments' => 'ID lampiran yang dihapus'];
         $fieldLabels['depreciation_rate'] = 'Penyusutan per tahun (%)';
         $fieldLabels['sale_data'] = 'Penjualan aset';
-        $valueLabels = ['available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual', 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total'];
+        $valueLabels = ['available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'borrowed' => 'Dipinjam', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', 'sold' => 'Dijual', 'baik' => 'Baik', 'rusak' => 'Rusak', 'rusak_total' => 'Rusak total'];
         $formatTicketValue = function ($field, $value) use ($valueLabels) {
             if ($value === null || $value === '') return 'Belum diisi';
             if (is_array($value)) return implode(', ', array_map(fn($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : (string) $v, $value)) ?: 'Tidak ada';

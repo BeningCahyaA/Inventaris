@@ -13,7 +13,7 @@ class DepreciateAssets extends Command
 
     public function handle(AssetDepreciationService $service): int
     {
-        Asset::active()->where(fn ($q) => $q->where('depreciation_rate', '>', 0)->orWhereHas('depreciations'))
+        Asset::active()->where(fn ($q) => $q->whereHas('categoryDefinition', fn ($category) => $category->where('depreciation_rate', '>', 0))->orWhereHas('depreciations'))
             ->chunkById(100, function ($assets) use ($service) {
                 foreach ($assets as $asset) $service->sync($asset);
             });

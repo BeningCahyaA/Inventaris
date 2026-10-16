@@ -55,7 +55,7 @@
 
                         <td class="px-4 py-4 text-center whitespace-nowrap">
                             @php
-                                $statusLabel = match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', default => $asset->status };
+                                $statusLabel = match($asset->status) { 'available' => 'Tersedia', 'in_use' => 'Sedang digunakan', 'borrowed' => 'Dipinjam', 'maintenance' => 'Dalam perawatan', 'broken' => 'Rusak', default => $asset->status };
                             @endphp
                             <span class="asset-status asset-status-{{ $asset->status }}">{{ $statusLabel }}</span>
                         </td>
