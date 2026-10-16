@@ -199,7 +199,11 @@
                 @if($logs->count() > 0)
                 <div class="space-y-3 md:space-y-4">
                     @foreach($logs as $log)
+<<<<<<< Updated upstream
                     <div class="border border-gray-200 rounded-lg p-3 md:p-4 hover:border-purple-200 hover:shadow-sm transition-all bg-white">
+=======
+                    <div class="border border-gray-200 rounded-lg p-3 md:p-4 hover:border-indigo-200 hover:shadow-sm transition-all bg-white">
+>>>>>>> Stashed changes
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1 sm:gap-2 mb-1.5 sm:mb-1">
                             <div class="flex flex-wrap items-center gap-2">
                                 <h4 class="font-bold text-gray-900 text-sm">{{ $log->ref_name }}</h4>

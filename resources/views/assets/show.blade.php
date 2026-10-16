@@ -44,7 +44,7 @@
             this._scanStatus = 'Membuka kamera...';
             BarcodeCam.start(this.$refs.editVideo, (text) => this.onEditScanSuccess(text))
                 .then(() => { this._scanStatus = 'Arahkan kamera ke barcode...'; })
-                .catch((e) => { console.error('Scanner error:', e); this._scanStatus =  BarcodeCam.errorMessage(e); });
+                .catch((e) => { console.error('Scanner error:', e); this._scanStatus = '❌ ' + BarcodeCam.errorMessage(e); });
         },
 
         stopEditScanner() {
@@ -59,14 +59,14 @@
         onEditScanSuccess(text) {
             const code = String(text || '').trim();
             if (code === String(this._editTag || '').trim()) {
-                this._scanStatus = 'Barcode cocok! Mengalihkan...';
+                this._scanStatus = '✅ Barcode cocok! Mengalihkan...';
                 const target = this._editUrl;
                 this.stopEditScanner();
                 this.showEditScanner = false;
                 window.location.href = target;
             } else {
                 BarcodeCam.pauseFor(2000);
-                this._scanStatus = 'Barcode tidak cocok! Pastikan Anda scan aset yang benar.';
+                this._scanStatus = '❌ Barcode tidak cocok! Pastikan Anda scan aset yang benar.';
                 setTimeout(() => { if (this.showEditScanner) this._scanStatus = 'Arahkan kamera ke barcode...'; }, 2000);
             }
         }
