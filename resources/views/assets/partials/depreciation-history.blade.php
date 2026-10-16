@@ -1,6 +1,6 @@
 <div x-show="activeTab === 'depreciation'" x-cloak>
     <h3 class="font-bold text-gray-900 mb-2">Riwayat penyusutan tahunan</h3>
-    <p class="text-sm text-gray-500 mb-4">Penyusutan menggunakan harga beli awal. Riwayat yang sudah tercatat menyimpan persentase dan nilai pada saat perhitungan.</p>
+    <p class="text-sm text-gray-500 mb-4">Penyusutan dicatat satu kali per tahun setelah satu tahun penuh sejak tanggal pembelian, bukan setiap bulan. Nilainya dihitung dari harga beli awal × persentase tahunan kategori. Riwayat yang sudah tercatat tetap menyimpan persentase dan nilai saat perhitungan.</p>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
         <div class="rounded-lg bg-gray-50 p-3"><p class="text-xs text-gray-500">Harga beli awal</p><p class="font-semibold text-gray-900 mt-1">Rp {{ number_format($asset->price, 2, ',', '.') }}</p></div>
         <div class="rounded-lg bg-gray-50 p-3"><p class="text-xs text-gray-500">Total penyusutan</p><p class="font-semibold text-gray-900 mt-1">Rp {{ number_format($asset->depreciations->sum('amount'), 2, ',', '.') }}</p></div>
@@ -12,13 +12,13 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-gray-50 text-xs text-gray-500"><tr>
-                    <th class="p-3">Tahun ke</th><th class="p-3">Tanggal</th><th class="p-3">Persentase</th><th class="p-3 text-right">Nilai sebelum</th><th class="p-3 text-right">Penyusutan</th><th class="p-3 text-right">Nilai setelah</th>
+                    <th class="p-3">Tahun ke</th><th class="p-3">Tahun penyusutan</th><th class="p-3">Persentase per tahun</th><th class="p-3 text-right">Nilai sebelum</th><th class="p-3 text-right">Penyusutan</th><th class="p-3 text-right">Nilai setelah</th>
                 </tr></thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($asset->depreciations as $entry)
                         <tr>
                             <td class="p-3">{{ $entry->year_number }}</td>
-                            <td class="p-3 whitespace-nowrap">{{ $entry->depreciated_on->format('d/m/Y') }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $entry->depreciated_on->format('Y') }}</td>
                             <td class="p-3">{{ number_format($entry->rate, 2, ',', '.') }}%</td>
                             <td class="p-3 text-right whitespace-nowrap">Rp {{ number_format($entry->opening_value, 2, ',', '.') }}</td>
                             <td class="p-3 text-right whitespace-nowrap">Rp {{ number_format($entry->amount, 2, ',', '.') }}</td>
