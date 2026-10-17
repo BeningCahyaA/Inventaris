@@ -38,7 +38,7 @@ class UpdateAssetRequest extends FormRequest
             'serial_number' => 'nullable|string|max:255',
             'warranty_expiry_date' => 'nullable|date',
             'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-            'borrower_name' => 'required_if:status,in_use,borrowed|nullable|string|max:255',
+            'borrower_name' => 'required_if:status,borrowed|nullable|string|max:255',
             'due_at' => 'nullable|date',
             'borrow_notes' => 'nullable|string|max:500',
             'delete_attachments' => 'nullable|array',
