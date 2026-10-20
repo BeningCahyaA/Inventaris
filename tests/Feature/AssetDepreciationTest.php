@@ -134,4 +134,25 @@ class AssetDepreciationTest extends TestCase
         $this->put(route('categories.update', $category->id), $payload)->assertSessionHasErrors('depreciation_rate');
         $this->get(route('assets.edit', $asset->id))->assertOk()->assertDontSee('name="depreciation_rate"', false);
     }
+    public function test_dashboard_and_asset_list_show_original_and_depreciated_values(): void
+    {
+        $asset = $this->asset();
+        app(AssetDepreciationService::class)->sync($asset);
+        $this->asset(['status' => 'sold', 'price' => 5000000]);
+        $deleted = $this->asset(['price' => 2000000]);
+        $deleted->delete();
+        \Illuminate\Support\Facades\DB::connection()->getPdo()->sqliteCreateFunction('DATE_FORMAT', fn ($value, $format) => substr($value, 0, 7), 2);
+        \Illuminate\Support\Facades\Cache::flush();
+        $stats = app(\App\Services\DashboardService::class)->getStats();
+        $this->assertSame(10000000, $stats['totalValue']);
+        $this->assertSame(7000000.0, $stats['depreciatedValue']);
+        $this->actingAs(User::factory()->create(['role' => 'super_admin']));
+        $this->get(route('assets.index'))->assertOk()->assertSee('Nilai setelah penyusutan')->assertSee('7.000.000,00');
+        $this->get(route('dashboard'))->assertOk()->assertSee('Total nilai aset')->assertSee('Nilai aset setelah penyusutan')->assertSee('7.000.000,00');
+        $asset->update(['price' => 100]);
+        $this->asset(['price' => 500]);
+        \Illuminate\Support\Facades\Cache::flush();
+        $this->assertSame(500.0, app(\App\Services\DashboardService::class)->getStats()['depreciatedValue']);
+    }
+
 }

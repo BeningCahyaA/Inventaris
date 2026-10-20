@@ -42,7 +42,7 @@
                 <h2 id="overview-title" class="text-lg font-bold text-gray-900">Ringkasan aset</h2>
                 <p id="dashboard-update-status" class="text-xs text-gray-500" role="status">Memuat pembaruan data…</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div class="rounded-xl border border-gray-200 bg-white p-5">
                     <p class="text-sm font-medium text-gray-600">Total aset</p>
                     <p id="stat-total-assets" class="mt-2 text-3xl font-bold text-gray-900 tabular-nums">{{ $totalAssets }}</p>
@@ -52,6 +52,11 @@
                     <p class="text-sm font-medium text-gray-600">Total nilai aset</p>
                     <p id="stat-total-value" class="mt-2 text-xl lg:text-2xl font-bold text-gray-900 tabular-nums break-words">Rp {{ number_format($totalValue, 0, ',', '.') }}</p>
                     <p class="mt-2 text-xs text-gray-500">Berdasarkan harga pembelian</p>
+                </div>
+                <div class="rounded-xl border border-purple-200 bg-purple-50 p-5 min-w-0">
+                    <p class="text-sm font-medium text-purple-700">Nilai aset setelah penyusutan</p>
+                    <p id="stat-depreciated-value" class="mt-2 text-xl lg:text-2xl font-bold text-purple-900 tabular-nums break-words">Rp {{ number_format($depreciatedValue, 2, ',', '.') }}</p>
+                    <p class="mt-2 text-xs text-purple-700">Harga awal dikurangi penyusutan tahunan tercatat; aset dijual tidak termasuk.</p>
                 </div>
                 <div class="rounded-xl border border-gray-200 bg-white p-5">
                     <p class="text-sm font-medium text-gray-600">Menunggu persetujuan</p>
@@ -512,6 +517,7 @@
                 // 1. Update counters
                 document.getElementById('stat-total-assets').innerText = data.totalAssets;
                 document.getElementById('stat-total-value').innerText = 'Rp ' + formatNumber(data.totalValue);
+                document.getElementById('stat-depreciated-value').innerText = 'Rp ' + Number(data.depreciatedValue).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 document.getElementById('dashboard-update-status').textContent = 'Diperbarui ' + new Date().toLocaleTimeString('en-GB', {
                     timeZone: 'Asia/Jakarta',
                     hour12: false

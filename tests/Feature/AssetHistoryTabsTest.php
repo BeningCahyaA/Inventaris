@@ -47,6 +47,11 @@ class AssetHistoryTabsTest extends TestCase
             ->assertSee('href="'.route('categories.edit', $category->id).'"', false);
         $this->get(route('assets.edit', $asset->id))->assertOk();
         $this->get(route('categories.edit', $category->id))->assertOk();
+        $this->get(route('approvals.index', ['status' => 'approved', 'search' => 'Peralatan']))->assertOk()
+            ->assertSee($category->name)->assertDontSee($asset->asset_tag);
+        $this->get(route('approvals.index', ['status' => 'pending', 'search' => 'Peralatan']))->assertOk()
+            ->assertDontSee('href="'.route('categories.edit', $category->id).'"', false);
+
         $asset->delete();
         $this->get(route('approvals.index', ['status' => 'approved']))->assertOk()->assertSee('Data sudah dihapus');
     }

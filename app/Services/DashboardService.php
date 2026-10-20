@@ -37,6 +37,12 @@ class DashboardService
                 SUM(CASE WHEN `condition` = 'rusak_total' THEN 1 ELSE 0 END) as cond_rusak_total
             ")->first();
 
+            $depreciationTotals = DB::table('asset_depreciations')
+                ->select('asset_id')->selectRaw('SUM(amount) as total')->groupBy('asset_id');
+            $netValue = Asset::active()->leftJoinSub($depreciationTotals, 'depreciation_totals', function ($join) {
+                $join->on('assets.id', '=', 'depreciation_totals.asset_id');
+            })->selectRaw('COALESCE(SUM(CASE WHEN COALESCE(assets.price, 0) > COALESCE(depreciation_totals.total, 0) THEN COALESCE(assets.price, 0) - COALESCE(depreciation_totals.total, 0) ELSE 0 END), 0) as net_value')->value('net_value');
+
             $categoryStats = Category::leftJoin('assets', function ($join) { $join->on('categories.slug', '=', 'assets.category')->where('assets.status', '!=', 'sold')->whereNull('assets.deleted_at'); })
                 ->select('categories.name', 'categories.slug', DB::raw('COUNT(assets.id) as total'))
                 ->groupBy('categories.id', 'categories.name', 'categories.slug')
@@ -82,6 +88,7 @@ class DashboardService
             return [
                 'totalAssets'           => (int) $stats->total_assets,
                 'totalValue'            => (int) $stats->total_value,
+                'depreciatedValue'      => round((float) $netValue, 2),
                 'pendingCount'          => $pendingCount,
                 'statusAvailable'       => (int) $stats->status_available,
                 'statusInUse'           => (int) $stats->status_in_use,

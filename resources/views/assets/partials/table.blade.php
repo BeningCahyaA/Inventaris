@@ -9,7 +9,7 @@
         <caption class="sr-only">Daftar aset, penanggung jawab, lokasi, status, dan aksi</caption>
         <thead><tr>
             <th scope="col" class="asset-check-cell"><input type="checkbox" id="select-all-page" aria-label="Pilih semua aset di halaman ini" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"></th>
-            <th scope="col">Aset</th><th scope="col">Penanggung jawab & lokasi</th><th scope="col">Kategori & status</th><th scope="col" class="category-actions-heading">Aksi</th>
+            <th scope="col">Aset</th><th scope="col">Penanggung jawab & lokasi</th><th scope="col">Kategori & status</th><th scope="col">Nilai setelah penyusutan</th><th scope="col" class="category-actions-heading">Aksi</th>
         </tr></thead>
         <tbody>
             @foreach($assets as $asset)
@@ -34,6 +34,10 @@
                 <td class="asset-status-cell" data-label="Kategori & status">
                     <span class="asset-category">{{ $assetCategoryNames[$asset->category] ?? $asset->category }}</span>
                     <span class="asset-status asset-status-{{ $asset->status }}">{{ $statusLabel }}</span>
+                </td>
+                <td data-label="Nilai setelah penyusutan">
+                    <span class="asset-pic">Rp {{ number_format(max(0, round((float) $asset->price - (float) $asset->depreciations_sum_amount, 2)), 2, ',', '.') }}</span>
+                    <span class="category-slug">Harga awal: Rp {{ number_format($asset->price, 0, ',', '.') }}</span>
                 </td>
                 <td class="category-actions-cell asset-actions-cell">
                     <div class="category-actions">

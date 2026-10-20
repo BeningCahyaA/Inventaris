@@ -4,7 +4,6 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Tiket Validasi') }}
         </h2>
-        <p class="text-sm text-gray-500 mt-1">Review dan validasi permintaan perubahan atau penghapusan aset dari Admin.</p>
     </x-slot>
 
     <div class="management-page approvals-page" x-data="{
@@ -16,24 +15,21 @@
         <div class="max-w-7xl mx-auto">
 
             <div class="management-intro"><div><h3>Persetujuan perubahan</h3><p>Tinjau pengajuan, bandingkan perubahan, lalu tentukan persetujuannya.</p></div></div>
-            {{-- Tabs --}}
-            <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar scroll-smooth">
-                <a href="{{ route('approvals.index', ['status' => 'pending']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'pending' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
-                    Menunggu Validasi
-                </a>
-                <a href="{{ route('approvals.index', ['status' => 'approved']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'approved' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
-                    Disetujui
-                </a>
-                <a href="{{ route('approvals.index', ['status' => 'rejected']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'rejected' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
-                    Ditolak
-                </a>
-                <a href="{{ route('approvals.index', ['status' => 'all']) }}"
-                   class="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold transition {{ $status === 'all' ? 'bg-purple-600 text-white shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">
-                    Semua Riwayat
-                </a>
+            <nav class="management-tabs" aria-label="Status persetujuan">
+                @foreach(['pending' => 'Menunggu validasi', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'all' => 'Semua riwayat'] as $tab => $label)
+                    <a href="{{ route('approvals.index', ['status' => $tab]) }}" class="management-tab {{ $status === $tab ? 'is-active' : '' }}" @if($status === $tab) aria-current="page" @endif>{{ $label }}</a>
+                @endforeach
+            </nav>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
+                <form method="GET" action="{{ route('approvals.index') }}" role="search" class="flex flex-col sm:flex-row items-stretch gap-3">
+                    <input type="hidden" name="status" value="{{ $status }}">
+                    <x-management-search label="Cari tiket persetujuan" placeholder="Cari nama aset, kategori, tag, atau pengaju..." />
+                    <button type="submit" class="px-5 py-2.5 bg-purple-600 text-sm font-semibold text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition">Cari</button>
+                    @if(request()->filled('search'))
+                        <a href="{{ route('approvals.index', ['status' => $status]) }}" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-50">Reset</a>
+                    @endif
+                </form>
             </div>
 
             <div class="management-panel bg-white overflow-hidden flex flex-col">
@@ -54,7 +50,7 @@
                             <tr class="bg-white border-b border-gray-100 text-[11px] text-gray-400 uppercase tracking-widest">
                                 @if($status === 'pending')
                                 <th class="px-6 py-4 w-10">
-                                    <input type="checkbox" id="select-all-page" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                    <input type="checkbox" id="select-all-page" aria-label="Pilih semua tiket di halaman ini" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 </th>
                                 @endif
                                 <th class="px-6 py-4 font-bold">Waktu Pengajuan</th>
@@ -70,7 +66,7 @@
                             <tr class="hover:bg-purple-50/30 transition-colors group">
                                 @if($status === 'pending')
                                 <td class="px-6 py-4">
-                                    <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                    <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" aria-label="Pilih tiket {{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 </td>
                                 @endif
                                 <td class="px-6 py-4">
@@ -107,17 +103,13 @@
                                 </td>
                                 <td class="px-6 py-4 align-top">
                                     @if($log->action === 'update' && !empty($log->changed_fields))
-                                        <div class="approval-changes space-y-2 max-w-md">
+                                        <div class="approval-changes">
                                             @foreach($log->changed_fields as $field => $values)
                                                 @if($field === 'sale_data')
                                                     @include('assets.partials.sale-request-summary')
                                                     @continue
                                                 @endif
-                                                <div class="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                                                    <div class="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1">{{ $field === 'depreciation_rate' ? 'Penyusutan per tahun (%)' : str_replace('_', ' ', $field) }}</div>
-                                                    <div class="text-[11px] text-red-600"><span class="font-semibold">Lama:</span> {{ is_array($values['old']) ? json_encode($values['old']) : ($values['old'] ?? '-') }}</div>
-                                                    <div class="text-[11px] text-emerald-700"><span class="font-semibold">Baru:</span> {{ is_array($values['new']) ? json_encode($values['new']) : ($values['new'] ?? '-') }}</div>
-                                                </div>
+                                                @include('assets.partials.approval-change')
                                             @endforeach
                                         </div>
                                     @elseif($log->action === 'delete')
@@ -182,7 +174,7 @@
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-3">
                                 @if($status === 'pending')
-                                <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                <input type="checkbox" value="{{ $log->log_type }}:{{ $log->id }}" aria-label="Pilih tiket {{ $log->id }}" class="ticket-checkbox rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
                                 @endif
                                 <div>
                                     @if($log->log_type === 'asset')
@@ -209,17 +201,13 @@
                             <span>{{ $log->created_at->format('d M Y, H:i') }}</span>
                         </div>
                         @if($log->action === 'update' && !empty($log->changed_fields))
-                            <div class="space-y-1.5">
+                            <div class="approval-changes">
                                 @foreach($log->changed_fields as $field => $values)
                                     @if($field === 'sale_data')
                                         @include('assets.partials.sale-request-summary')
                                         @continue
                                     @endif
-                                    <div class="border border-gray-200 rounded p-2 bg-gray-50">
-                                        <div class="text-[10px] font-bold uppercase text-gray-500 mb-0.5">{{ $field === 'depreciation_rate' ? 'Penyusutan per tahun (%)' : str_replace('_', ' ', $field) }}</div>
-                                        <div class="text-[11px] text-red-600">Lama: {{ is_array($values['old']) ? json_encode($values['old']) : ($values['old'] ?? '-') }}</div>
-                                        <div class="text-[11px] text-emerald-700">Baru: {{ is_array($values['new']) ? json_encode($values['new']) : ($values['new'] ?? '-') }}</div>
-                                    </div>
+                                    @include('assets.partials.approval-change')
                                 @endforeach
                             </div>
                         @elseif($log->action === 'delete')

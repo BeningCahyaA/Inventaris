@@ -28,7 +28,7 @@ class AssetController extends Controller
 {
     public function index(Request $request): View|string
     {
-        $query = Asset::active()->with('activeTransaction');
+        $query = Asset::active()->with('activeTransaction')->withSum('depreciations', 'amount');
 
         $this->applyAssetFilters($request, $query);
 

@@ -34,6 +34,13 @@ class ApprovalController extends Controller
         if ($status !== 'all') {
             $assetQuery->where('status', $status);
         }
+        if ($request->filled('search')) {
+            $search = '%'.$request->input('search').'%';
+            $assetQuery->where(function ($query) use ($search) {
+                $query->whereHas('asset', fn ($asset) => $asset->where('name', 'like', $search)->orWhere('asset_tag', 'like', $search))
+                    ->orWhereHas('user', fn ($user) => $user->where('name', 'like', $search));
+            });
+        }
         $pendingAssetLogs = $assetQuery->latest()->get();
 
         $pendingAssetLogs->transform(function ($log) {
@@ -46,6 +53,13 @@ class ApprovalController extends Controller
         $categoryQuery = CategoryLog::with(['user', 'category']);
         if ($status !== 'all') {
             $categoryQuery->where('status', $status);
+        }
+        if ($request->filled('search')) {
+            $search = '%'.$request->input('search').'%';
+            $categoryQuery->where(function ($query) use ($search) {
+                $query->whereHas('category', fn ($category) => $category->where('name', 'like', $search)->orWhere('slug', 'like', $search))
+                    ->orWhereHas('user', fn ($user) => $user->where('name', 'like', $search));
+            });
         }
         $pendingCategoryLogs = $categoryQuery->latest()->get();
 

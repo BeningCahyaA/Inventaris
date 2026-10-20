@@ -9,10 +9,10 @@
     <div class="asset-subpage management-page history-page" x-data="{ showFilters: false }">
         <div class="max-w-7xl mx-auto">
             <div class="management-intro"><div><h3>Riwayat aset</h3><p>Pantau riwayat peminjaman dan aktivitas pengelolaan aset.</p></div></div>
-            <nav class="flex gap-6 border-b border-gray-200 mb-6" aria-label="Jenis riwayat">
+            <nav class="management-tabs" aria-label="Jenis riwayat">
                 @foreach(['history' => 'Riwayat peminjaman', 'activity' => 'Log aktivitas'] as $tab => $label)
                     <a href="{{ route('assets.history', ['tab' => $tab]) }}" @if($activeTab === $tab) aria-current="page" @endif
-                        class="inline-flex items-center py-3 border-b-2 text-sm font-semibold transition {{ $activeTab === $tab ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700' }}">{{ $label }}</a>
+                        class="management-tab {{ $activeTab === $tab ? 'is-active' : '' }}">{{ $label }}</a>
                 @endforeach
             </nav>
             @if($activeTab === 'activity')

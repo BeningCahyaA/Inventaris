@@ -1,9 +1,9 @@
 <div class="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
     <form method="GET" action="{{ route('assets.history') }}" class="flex flex-col sm:flex-row gap-3" role="search">
         <input type="hidden" name="tab" value="activity">
-        <input type="search" name="search" value="{{ request('search') }}" aria-label="Cari log aktivitas" placeholder="Cari pelaku, nama aset, kategori, atau tag..." class="flex-1 min-w-0 border-gray-200 rounded-lg bg-gray-50 text-sm focus:ring-purple-500 focus:border-purple-500">
+        <x-management-search label="Cari log aktivitas" placeholder="Cari pelaku, nama aset, kategori, atau tag..." />
         <button type="submit" class="px-5 py-2.5 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700">Cari</button>
-        @if(request()->filled('search'))<a href="{{ route('assets.history', ['tab' => 'activity']) }}" class="px-4 py-2.5 text-center text-sm text-gray-600 border border-gray-200 rounded-lg">Reset</a>@endif
+        @if(request()->filled('search'))<a href="{{ route('assets.history', ['tab' => 'activity']) }}" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">Reset</a>@endif
     </form>
 </div>
 <div class="management-panel bg-white overflow-hidden">

@@ -397,3 +397,27 @@
     .asset-has-selection { padding-bottom: 480px; }
 }
 @media (max-width: 479px) { .asset-bulk-loan { grid-template-columns: 1fr; } }
+
+.management-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.management-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; color: #475569; font-size: 13px; font-weight: 600; line-height: 1.4; transition: background .15s, color .15s; }
+.management-tab:hover { background: #f8fafc; color: #7e22ce; }
+.management-tab.is-active { background: #9333ea; border-color: #9333ea; color: #fff; box-shadow: 0 2px 4px #9333ea1a; }
+.management-tab:focus-visible { outline: 2px solid #a855f7; outline-offset: 3px; }
+.approvals-page .approvals-table td { vertical-align: top; }
+.approvals-page .approvals-table th { font-size: 11px; letter-spacing: .025em; }
+.approvals-page .approvals-table td:nth-child(2) { min-width: 160px; }
+.approvals-page .approval-changes { display: grid; gap: 8px; min-width: 260px; max-width: 400px; }
+.approvals-page .approval-change { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+.approval-change-label { color: #334155; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.approval-change-values { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; }
+.approval-change-values dt { color: #64748b; font-size: 11px; margin-bottom: 4px; }
+.approval-change-values dd { color: #475569; overflow-wrap: anywhere; line-height: 1.5; }
+.approval-change-values > div:last-child dd { color: #047857; font-weight: 600; }
+.approvals-page button, .history-page button { min-height: 40px; border-radius: 8px; font-size: 13px; font-weight: 600; text-transform: none; letter-spacing: normal; }
+.approvals-page button:focus-visible, .history-page button:focus-visible { outline: 2px solid #a855f7; outline-offset: 3px; }
+.approvals-page #bulk-action-bar { max-width: calc(100% - 32px); flex-wrap: wrap; gap: 12px; }
+@media (max-width: 767px) {
+    .management-tabs { gap: 8px; }
+    .management-tab { flex: 1 1 auto; }
+    .approvals-page .approval-changes { min-width: 0; max-width: none; }
+}
