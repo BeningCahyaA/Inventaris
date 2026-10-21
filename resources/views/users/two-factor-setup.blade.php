@@ -8,11 +8,13 @@
         <a href="{{ route('users.index') }}" class="text-sm font-medium text-purple-700 hover:text-purple-900">← Kembali ke Kelola User</a>
 
         <section class="mt-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-            <h3 class="text-lg font-bold text-gray-900">Amankan fitur tambah user</h3>
-            <p class="mt-2 text-sm text-gray-600">
-                Aktivasi dilakukan oleh pemilik akun Super Admin. Masukkan password akun saat ini untuk memulai,
-                lalu pindai QR dengan Google Authenticator dan konfirmasi kode enam digit. Email tidak diperlukan.
-            </p>
+            <h3 class="text-lg font-bold text-gray-900">Petunjuk aktivasi dan penggunaan</h3>
+            <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm text-gray-600">
+                <li>Aktivasi awal hanya dilakukan sekali oleh pemilik akun Super Admin.</li>
+                <li>Masukkan password Super Admin untuk menampilkan QR, lalu pindai QR menggunakan aplikasi Google Authenticator.</li>
+                <li>Masukkan kode enam digit dari aplikasi untuk menyelesaikan aktivasi. QR aktivasi berlaku selama 10 menit.</li>
+                <li>Setelah aktif, Anda tidak perlu memindai QR lagi. Setiap akan menambah user, masukkan kode terbaru dari Google Authenticator pada halaman verifikasi.</li>
+            </ol>
 
             @if (session('status'))
                 <p class="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{{ session('status') }}</p>
@@ -24,7 +26,7 @@
                     <div class="mt-4 flex justify-center" aria-label="QR aktivasi Google Authenticator">
                         {!! $qrCode !!}
                     </div>
-                    <p class="mt-4 text-sm text-gray-600">QR hanya tersedia dalam sesi Super Admin ini. Jangan bagikan atau ambil tangkapan layar QR.</p>
+                    <p class="mt-4 text-sm text-gray-600">QR berlaku selama 10 menit.</p>
 
                     <form action="{{ route('users.two-factor.activate') }}" method="POST" class="mt-6">
                         @csrf
@@ -40,8 +42,8 @@
                     <form action="{{ route('users.two-factor.begin-setup') }}" method="POST" class="mt-5 border-t border-gray-200 pt-5">
                         @csrf
                         <input type="hidden" name="replace" value="1">
-                        <label for="replace-password" class="block text-sm font-medium text-gray-700">QR yang dipindai tidak cocok?</label>
-                        <p class="mt-1 text-sm text-gray-600">Ganti QR hanya jika perlu. QR sebelumnya akan langsung tidak berlaku.</p>
+                        <label for="replace-password" class="block text-sm font-medium text-gray-700">Ganti QR jika diperlukan. QR sebelumnya akan langsung tidak berlaku.</label>
+                        <p class="mt-1 text-sm text-gray-600">Masukkan password Super Admin untuk mengganti QR.</p>
                         <input id="replace-password" name="password" type="password" autocomplete="current-password" required
                                class="mt-3 block w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                         @error('password') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror

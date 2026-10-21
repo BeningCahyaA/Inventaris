@@ -66,7 +66,13 @@ class UserTwoFactorController extends Controller
             'pending_totp_expires_at' => now()->addMinutes(10)->timestamp,
         ]);
 
-        return redirect()->route('users.two-factor.setup');
+        $response = redirect()->route('users.two-factor.setup');
+
+        if ($validated['replace'] ?? false) {
+            return $response->with('status', 'QR berhasil diperbarui. Pindai QR yang baru untuk melanjutkan aktivasi.');
+        }
+
+        return $response;
     }
 
     public function activate(Request $request): RedirectResponse
