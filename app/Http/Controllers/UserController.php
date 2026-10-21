@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -24,8 +25,19 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        $authorizationService = app(\App\Services\UserCreationAuthorizationService::class);
+
+        if (! Auth::user()->hasEnabledTotp()) {
+            return redirect()->route('users.two-factor.setup')
+                ->with('status', 'Aktifkan Google Authenticator sebelum menambahkan user.');
+        }
+
+        if ($authorizationService->currentFor(request(), Auth::user()) === null) {
+            return redirect()->route('users.two-factor.challenge');
+        }
+
         return view('users.create');
     }
 
@@ -33,14 +45,28 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
-        ]);
+        $authorizationService = app(\App\Services\UserCreationAuthorizationService::class);
+        $user = DB::transaction(function () use ($request, $validated, $authorizationService): User {
+            $authorization = $authorizationService->lockCurrentFor($request, Auth::user());
 
-        Log::info("User (ID: " . Auth::id() . ") created user: " . $validated['email']);
+            if ($authorization === null) {
+                abort(403, 'Verifikasi Google Authenticator diperlukan untuk menambahkan user.');
+            }
+
+            $authorization->consumed_at = now();
+            $authorization->save();
+
+            return User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => $validated['role'],
+            ]);
+        });
+
+        $request->session()->forget('user_creation_token');
+
+        Log::info("User (ID: " . Auth::id() . ") created user: " . $user->email);
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan!');
     }
 

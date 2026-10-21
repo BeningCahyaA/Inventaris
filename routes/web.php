@@ -68,7 +68,24 @@ Route::middleware('auth')->group(function () {
 
     // === 2. FITUR SISTEM CORE (KHUSUS Super Admin) ===
     Route::middleware(['role:super_admin'])->group(function () {
-        Route::resource('users', UserController::class);
+        Route::get('/users/two-factor/setup', [\App\Http\Controllers\UserTwoFactorController::class, 'setup'])
+            ->name('users.two-factor.setup');
+        Route::post('/users/two-factor/setup', [\App\Http\Controllers\UserTwoFactorController::class, 'beginSetup'])
+            ->middleware('throttle:5,1')
+            ->name('users.two-factor.begin-setup');
+        Route::post('/users/two-factor/activate', [\App\Http\Controllers\UserTwoFactorController::class, 'activate'])
+            ->middleware('throttle:5,1')
+            ->name('users.two-factor.activate');
+        Route::get('/users/two-factor/challenge', [\App\Http\Controllers\UserTwoFactorController::class, 'challenge'])
+            ->name('users.two-factor.challenge');
+        Route::post('/users/two-factor/authorize-creation', [\App\Http\Controllers\UserTwoFactorController::class, 'authorizeCreation'])
+            ->middleware('throttle:5,1')
+            ->name('users.two-factor.authorize-creation');
+
+        Route::resource('users', UserController::class)->except(['store']);
+        Route::post('/users', [UserController::class, 'store'])
+            ->middleware('user.creation.authorized')
+            ->name('users.store');
         Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
         Route::post('/approvals/{type}/{id}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
         Route::post('/approvals/{type}/{id}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');

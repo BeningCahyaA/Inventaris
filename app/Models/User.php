@@ -37,6 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'totp_secret',
+        'totp_last_used_counter',
     ];
 
     /**
@@ -49,7 +51,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'totp_secret' => 'encrypted',
+            'totp_enabled_at' => 'datetime',
+            'totp_last_used_counter' => 'integer',
         ];
+    }
+
+    public function hasEnabledTotp(): bool
+    {
+        return $this->totp_secret !== null && $this->totp_enabled_at !== null;
     }
 
     public function assetTransactions(): HasMany
