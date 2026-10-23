@@ -331,7 +331,7 @@
     {{-- Kop Surat --}}
     <div class="kop">
         <table class="letterhead"><tr>
-        <td class="brand-cell"><img class="brand-logo" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/Master-Logo-Vodeco.png'))) }}" alt="Logo Vodeco"></td>
+        <td class="brand-cell"><img class="brand-logo" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/Logo-Vodeco-Media-Group-300x87.png'))) }}" alt="Logo Vodeco"></td>
         <td class="company-cell"><h1>VODECO DIGITAL MEDIATAMA</h1>
         <p class="subtitle">Jl. Dagan, Procot, Kec. Slawi, Kab. Tegal, Jawa Tengah</p>
         <p class="subtitle">Telp: +62 878-1099-2666 &bull; Email: hello@vodeco.co.id &bull; Web: vodeco.co.id</p>

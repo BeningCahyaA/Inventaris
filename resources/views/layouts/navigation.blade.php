@@ -3,7 +3,7 @@
 
     <div class="h-20 flex items-center justify-between px-6 border-b border-gray-100">
         <a href="{{ route('dashboard') }}">
-            <img src="{{ asset('img/Master-Logo-Vodeco.png') }}" alt="Logo Perusahaan" class="h-10 w-auto object-contain">
+            <img src="{{ asset('img/Logo-Vodeco-Media-Group-300x87.png') }}" alt="Logo Perusahaan" class="h-10 w-auto object-contain">
         </a>
         {{-- Mobile close button --}}
         <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer">

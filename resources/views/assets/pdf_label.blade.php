@@ -146,7 +146,7 @@
 
 <body>
     @php
-        $wordmarkData = base64_encode(file_get_contents(public_path('img/Label-Logo-Vodeco.png')));
+        $wordmarkData = base64_encode(file_get_contents(public_path('img/Logo-Vodeco-Media-Group-300x87.png')));
     @endphp
 
     <table class="layout-table">
