@@ -392,21 +392,22 @@
             $grandTotal += $catTotal;
         @endphp
 
-        <div class="section-title">Detail aset &mdash; {{ $catName }} ({{ $assets->count() }} unit)</div>
+        <div class="section-title">Detail aset &mdash; {{ $catName }} ({{ number_format($assets->sum('quantity'), 0, ',', '.') }} unit)</div>
 
         <table class="asset-table">
             <thead>
                 <tr>
                     <th style="width: 3%;">No</th>
                     <th style="width: 10%;">ID Aset</th>
-                    <th style="width: 18%;">Nama Aset</th>
-                    <th style="width: 10%;">Lokasi</th>
-                    <th style="width: 10%;">PIC</th>
+                    <th style="width: 16%;">Nama Aset</th>
+                    <th style="width: 5%;">Jumlah</th>
+                    <th style="width: 9%;">Lokasi</th>
+                    <th style="width: 9%;">PIC</th>
                     <th style="width: 8%;">Tgl Beli</th>
                     <th style="width: 11%;">Nilai (Rp)</th>
                     <th style="width: 7%;">Kondisi</th>
                     <th style="width: 7%;">Status</th>
-                    <th style="width: 16%;">Keterangan</th>
+                    <th style="width: 15%;">Keterangan</th>
                 </tr>
             </thead>
             <tbody>
@@ -415,6 +416,7 @@
                     <td class="text-center">{{ $globalNo++ }}</td>
                     <td class="monospace">{{ $asset->asset_tag }}</td>
                     <td>{{ $asset->name }}</td>
+                    <td class="text-center">{{ number_format($asset->quantity, 0, ',', '.') }}</td>
                     <td>{{ $asset->location ?? '-' }}</td>
                     <td>{{ $asset->person_in_charge ?? '-' }}</td>
                     <td class="text-center">{{ $asset->purchase_date ? \Carbon\Carbon::parse($asset->purchase_date)->locale('id')->isoFormat('D MMM YY') : '-' }}</td>

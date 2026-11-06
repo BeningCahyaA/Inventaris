@@ -23,6 +23,14 @@
                         </div>
 
                         <div class="mb-5">
+                            <label for="quantity" class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Barang yang Ada*</label>
+                            <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" min="1" max="4294967295" step="1" required
+                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 shadow-sm"
+                                placeholder="Contoh: 10">
+                            @error('quantity') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="mb-5">
                             <label for="person_in_charge" class="block text-sm font-semibold text-gray-700 mb-1">Penanggung Jawab</label>
                             <input type="text" name="person_in_charge" id="person_in_charge" value="{{ old('person_in_charge') }}"
                                 class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 shadow-sm"

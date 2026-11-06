@@ -19,6 +19,7 @@ class Asset extends Model
     protected $fillable = [
         'asset_tag',
         'name',
+        'quantity',
         'person_in_charge',
         'purchase_date',
         'warranty_expiry_date',
@@ -33,6 +34,7 @@ class Asset extends Model
     ];
 
     protected $casts = [
+        'quantity' => 'integer',
         'purchase_date' => 'date',
         'depreciation_rate' => 'decimal:2',
         'warranty_expiry_date' => 'date',

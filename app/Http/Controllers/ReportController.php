@@ -24,15 +24,15 @@ class ReportController extends Controller
 
         // Ringkasan umum
         $summary = [
-            'total_assets' => $assets->count(),
+            'total_assets' => $assets->sum('quantity'),
             'total_value' => $assets->sum('price'),
         ];
 
         // Breakdown per status
-        $statusBreakdown = $assets->groupBy('status')->map->count();
+        $statusBreakdown = $assets->groupBy('status')->map(fn ($items) => $items->sum('quantity'));
 
         // Breakdown per kondisi (normalize ke lowercase supaya match view keys)
-        $conditionBreakdown = $assets->groupBy(fn($a) => strtolower(str_replace(' ', '_', $a->condition ?? '')))->map->count();
+        $conditionBreakdown = $assets->groupBy(fn($a) => strtolower(str_replace(' ', '_', $a->condition ?? '')))->map(fn ($items) => $items->sum('quantity'));
 
         // Group by kategori (nama dari DB)
         $categories = Category::pluck('name', 'slug');
@@ -42,7 +42,7 @@ class ReportController extends Controller
         $categoryBreakdown = $groupedAssets->map(function ($items, $slug) use ($categories) {
             return [
                 'name' => $categories[$slug] ?? ucfirst($slug),
-                'count' => $items->count(),
+                'count' => $items->sum('quantity'),
                 'value' => $items->sum('price'),
             ];
         });
@@ -167,6 +167,7 @@ class ReportController extends Controller
             'No',
             'Asset Tag',
             'Nama Aset',
+            'Jumlah Barang',
             'Kategori',
             'Status',
             'Kondisi',
@@ -199,6 +200,7 @@ class ReportController extends Controller
                     $index + 1,
                     $asset->asset_tag,
                     $asset->name,
+                    $asset->quantity,
                     $categoryNames[$asset->category] ?? ucfirst($asset->category),
                     str_replace('_', ' ', ucfirst($asset->status)),
                     $kondisi,

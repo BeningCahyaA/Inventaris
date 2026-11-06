@@ -26,15 +26,15 @@ class DashboardService
             $now = Carbon::now();
 
             $stats = Asset::active()->selectRaw("
-                COUNT(*) as total_assets,
+                COALESCE(SUM(quantity), 0) as total_assets,
                 COALESCE(SUM(price), 0) as total_value,
-                SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as status_available,
-                SUM(CASE WHEN status = 'in_use' THEN 1 ELSE 0 END) as status_in_use,
-                SUM(CASE WHEN status = 'maintenance' THEN 1 ELSE 0 END) as status_maintenance,
-                SUM(CASE WHEN status = 'broken' THEN 1 ELSE 0 END) as status_broken,
-                SUM(CASE WHEN `condition` = 'baik' THEN 1 ELSE 0 END) as cond_baik,
-                SUM(CASE WHEN `condition` = 'rusak' THEN 1 ELSE 0 END) as cond_rusak,
-                SUM(CASE WHEN `condition` = 'rusak_total' THEN 1 ELSE 0 END) as cond_rusak_total
+                COALESCE(SUM(CASE WHEN status = 'available' THEN quantity ELSE 0 END), 0) as status_available,
+                COALESCE(SUM(CASE WHEN status = 'in_use' THEN quantity ELSE 0 END), 0) as status_in_use,
+                COALESCE(SUM(CASE WHEN status = 'maintenance' THEN quantity ELSE 0 END), 0) as status_maintenance,
+                COALESCE(SUM(CASE WHEN status = 'broken' THEN quantity ELSE 0 END), 0) as status_broken,
+                COALESCE(SUM(CASE WHEN `condition` = 'baik' THEN quantity ELSE 0 END), 0) as cond_baik,
+                COALESCE(SUM(CASE WHEN `condition` = 'rusak' THEN quantity ELSE 0 END), 0) as cond_rusak,
+                COALESCE(SUM(CASE WHEN `condition` = 'rusak_total' THEN quantity ELSE 0 END), 0) as cond_rusak_total
             ")->first();
 
             $depreciationTotals = DB::table('asset_depreciations')
@@ -44,7 +44,7 @@ class DashboardService
             })->selectRaw('COALESCE(SUM(CASE WHEN COALESCE(assets.price, 0) > COALESCE(depreciation_totals.total, 0) THEN COALESCE(assets.price, 0) - COALESCE(depreciation_totals.total, 0) ELSE 0 END), 0) as net_value')->value('net_value');
 
             $categoryStats = Category::leftJoin('assets', function ($join) { $join->on('categories.slug', '=', 'assets.category')->where('assets.status', '!=', 'sold')->whereNull('assets.deleted_at'); })
-                ->select('categories.name', 'categories.slug', DB::raw('COUNT(assets.id) as total'))
+                ->select('categories.name', 'categories.slug', DB::raw('COALESCE(SUM(assets.quantity), 0) as total'))
                 ->groupBy('categories.id', 'categories.name', 'categories.slug')
                 ->orderBy('categories.name')
                 ->get();
@@ -71,7 +71,7 @@ class DashboardService
                 ->count();
 
             // Tren penambahan aset per bulan (12 bulan terakhir)
-            $trendRaw = Asset::active()->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+            $trendRaw = Asset::active()->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(quantity) as total")
                 ->where('created_at', '>=', $now->copy()->subMonths(11)->startOfMonth())
                 ->groupBy('month')
                 ->orderBy('month')

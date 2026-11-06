@@ -22,6 +22,7 @@
                 <td class="asset-name-cell">
                     <a href="{{ route('assets.show', $asset->id) }}" class="category-name asset-name-link">{{ $asset->name }}</a>
                     <span class="asset-tag">{{ $asset->asset_tag }}</span>
+                    <span class="category-slug">Jumlah barang: {{ number_format($asset->quantity, 0, ',', '.') }} unit</span>
                     <span class="category-slug">Kondisi: {{ $conditionLabel }}</span>
                 </td>
                 <td class="asset-details-cell" data-label="Penanggung jawab & lokasi">

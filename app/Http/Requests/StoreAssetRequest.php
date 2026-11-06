@@ -20,6 +20,7 @@ class StoreAssetRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1|max:4294967295',
             'category' => 'required|exists:categories,slug',
             'status' => 'required|in:in_use,maintenance,broken,available,sold',
             'sale_date' => 'exclude_unless:status,sold|required|date_format:Y-m-d|before_or_equal:'.now('Asia/Jakarta')->toDateString().'|after_or_equal:purchase_date',

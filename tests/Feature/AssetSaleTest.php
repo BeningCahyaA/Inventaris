@@ -38,7 +38,7 @@ class AssetSaleTest extends TestCase
     private function payload(array $changes = []): array
     {
         return array_merge([
-            'name' => 'Laptop Terjual', 'category' => 'mobile', 'status' => 'sold',
+            'name' => 'Laptop Terjual', 'quantity' => 1, 'category' => 'mobile', 'status' => 'sold',
             'condition' => 'baik', 'description' => 'Laptop kantor', 'price' => 10000000,
             'purchase_date' => '2023-01-01', 'depreciation_rate' => 10,
             'sale_date' => '2025-06-01', 'sale_price' => 6500000,

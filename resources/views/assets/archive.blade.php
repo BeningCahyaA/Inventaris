@@ -36,7 +36,7 @@
                             <tbody>
                                 @foreach($assets as $asset)
                                     <tr class="group transition-colors">
-                                        <td><div class="font-bold text-gray-900 break-words group-hover:text-purple-600">{{ $asset->name }}</div><div class="text-xs text-gray-500 font-mono mt-0.5">{{ $asset->asset_tag }}</div></td>
+                                        <td><div class="font-bold text-gray-900 break-words group-hover:text-purple-600">{{ $asset->name }}</div><div class="text-xs text-gray-500 font-mono mt-0.5">{{ $asset->asset_tag }}</div><div class="text-xs text-gray-500 mt-1">Jumlah barang: {{ number_format($asset->quantity, 0, ',', '.') }} unit</div></td>
                                         <td class="text-gray-600 whitespace-nowrap">{{ $asset->sale?->sold_on?->format('d M Y') ?? '-' }}</td>
                                         <td class="font-semibold text-gray-900 whitespace-nowrap">Rp {{ number_format($asset->sale?->amount ?? 0, 2, ',', '.') }}</td>
                                         <td class="text-gray-700 break-words">{{ $asset->sale?->buyer_name ?: '-' }}</td>
@@ -50,7 +50,7 @@
                         @foreach($assets as $asset)
                             <article class="px-4 py-4">
                                 <div class="flex items-start justify-between gap-3 mb-3">
-                                    <div class="min-w-0"><h4 class="font-semibold text-gray-900 text-sm break-words">{{ $asset->name }}</h4><p class="font-mono text-xs text-gray-500 mt-1 break-all">{{ $asset->asset_tag }}</p></div>
+                                    <div class="min-w-0"><h4 class="font-semibold text-gray-900 text-sm break-words">{{ $asset->name }}</h4><p class="font-mono text-xs text-gray-500 mt-1 break-all">{{ $asset->asset_tag }}</p><p class="text-xs text-gray-500 mt-1">Jumlah barang: {{ number_format($asset->quantity, 0, ',', '.') }} unit</p></div>
                                     <span class="management-badge bg-emerald-100 text-emerald-700">Dijual</span>
                                 </div>
                                 <dl class="grid grid-cols-2 gap-3 text-xs bg-gray-50 p-3 rounded-lg border border-gray-100">

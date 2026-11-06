@@ -69,6 +69,58 @@ class AssetControllerTest extends TestCase
         $response->assertDontSee('Monitor Gudang');
     }
 
+    public function test_create_asset_persists_and_displays_quantity(): void
+    {
+        $user = User::factory()->create(['role' => 'super_admin']);
+        $category = \App\Models\Category::create(['name' => 'Mobile', 'slug' => 'mobile', 'prefix' => 'M']);
+
+        $this->actingAs($user)->post(route('assets.store'), [
+            'name' => 'Laptop Stok',
+            'quantity' => 8,
+            'category' => $category->slug,
+            'status' => 'available',
+            'purchase_date' => '2026-01-15',
+            'condition' => 'baik',
+            'description' => 'Laptop untuk tim',
+        ])->assertRedirect(route('assets.index'))->assertSessionHasNoErrors();
+
+        $asset = Asset::where('name', 'Laptop Stok')->firstOrFail();
+        $this->assertSame(8, $asset->quantity);
+        $this->actingAs($user)->get(route('assets.index'))->assertOk()->assertSee('Jumlah barang: 8 unit');
+        $this->get(route('assets.show', $asset->id))->assertOk()->assertSee('8 unit');
+    }
+
+    public function test_admin_quantity_changes_are_recorded_and_applied_after_approval(): void
+    {
+        $category = \App\Models\Category::create(['name' => 'Mobile', 'slug' => 'mobile', 'prefix' => 'M']);
+        $asset = Asset::factory()->create([
+            'category' => $category->slug,
+            'quantity' => 2,
+            'status' => 'available',
+        ]);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $superAdmin = User::factory()->create(['role' => 'super_admin']);
+
+        $this->actingAs($admin)->put(route('assets.update', $asset->id), [
+            'name' => $asset->name,
+            'quantity' => 6,
+            'category' => $category->slug,
+            'description' => $asset->description,
+            'status' => 'available',
+            'purchase_date' => $asset->purchase_date->format('Y-m-d'),
+            'condition' => $asset->condition,
+        ])->assertRedirect(route('assets.index'))->assertSessionHasNoErrors();
+
+        $log = \App\Models\AssetLog::where('asset_id', $asset->id)->where('status', 'pending')->firstOrFail();
+        $this->assertSame(6, $log->new_data['quantity']);
+        $this->assertSame(2, $asset->fresh()->quantity);
+
+        $this->actingAs($superAdmin)->post(route('approvals.approve', ['type' => 'asset', 'id' => $log->id]))
+            ->assertRedirect()->assertSessionHas('success');
+
+        $this->assertSame(6, $asset->fresh()->quantity);
+    }
+
     public function test_check_out_and_check_in_via_edit_form(): void
     {
         $user     = User::factory()->create(['role' => 'super_admin']);

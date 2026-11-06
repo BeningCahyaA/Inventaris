@@ -79,6 +79,7 @@ class AssetController extends Controller
 
             $asset = Asset::create([
                 'name' => $validated['name'],
+                'quantity' => $validated['quantity'],
                 'category' => $validated['category'],
                 'asset_tag' => $newTag,
                 'status' => $validated['status'],
@@ -158,6 +159,7 @@ class AssetController extends Controller
 
         $newData = [
             'name' => $validated['name'],
+            'quantity' => $validated['quantity'] ?? $asset->quantity,
             'category' => $validated['category'],
             'status' => $validated['status'],
             'description' => $validated['description'],

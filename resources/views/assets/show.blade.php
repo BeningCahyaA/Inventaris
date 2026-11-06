@@ -156,6 +156,10 @@
                                 </p>
                             </div>
                             <div>
+                                <p class="text-[10px] uppercase font-bold text-gray-500 mb-1 tracking-wider">Jumlah Barang</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ number_format($asset->quantity, 0, ',', '.') }} unit</p>
+                            </div>
+                            <div>
                                 <p class="text-[10px] uppercase font-bold text-gray-500 mb-1 tracking-wider">Serial Number</p>
                                 <p class="text-sm font-mono font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded inline-block border border-gray-100">{{ $asset->serial_number ?? '-' }}</p>
                             </div>

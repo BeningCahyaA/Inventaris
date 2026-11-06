@@ -21,6 +21,7 @@ class UpdateAssetRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'quantity' => 'sometimes|required|integer|min:1|max:4294967295',
             'category' => 'required|exists:categories,slug',
             'description' => 'required|string',
             'status' => 'required|in:in_use,borrowed,maintenance,broken,available,sold',
