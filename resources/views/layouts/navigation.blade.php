@@ -83,7 +83,9 @@
 
         <a href="{{ route('assets.archive') }}" @click="sidebarOpen = false"
             class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('assets.archive') ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50' }}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18v4H3zM5 8v12h14V8M10 12h4" /></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18v4H3zM5 8v12h14V8M10 12h4" />
+            </svg>
             <span>Arsip Aset</span>
         </a>
 
@@ -95,25 +97,17 @@
             <span>Kategori</span>
         </a>
 
-        <a href="{{ asset('docs/MANUAL-BOOK-ASET-TRACKER.docx') }}" target="_blank" rel="noopener"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 group text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-            <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3h7l4 4v14H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M9 13h6M9 17h6"></path>
-            </svg>
-            <span>Manual Book</span>
-        </a>
-
         @if(Auth::user()->role === 'super_admin')
 
         <div class="mt-4 pt-4 border-t border-gray-100">
 
-        <a href="{{ route('users.index') }}" @click="sidebarOpen = false"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 group {{ request()->routeIs('users.*') ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <svg class="w-5 h-5 {{ request()->routeIs('users.*') ? 'text-purple-600' : 'text-gray-400 group-hover:text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-            <span>User</span>
-        </a>
+            <a href="{{ route('users.index') }}" @click="sidebarOpen = false"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 group {{ request()->routeIs('users.*') ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                <svg class="w-5 h-5 {{ request()->routeIs('users.*') ? 'text-purple-600' : 'text-gray-400 group-hover:text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <span>User</span>
+            </a>
 
         </div>
 
